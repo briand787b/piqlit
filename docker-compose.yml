@@ -6,31 +6,57 @@ services:
       context: ./backend
       dockerfile: ./api/Dockerfile
     image: "briand787b/piqlit-backend-api:latest"
-    command: [
-      "/root/app",
-      "--port",
-      "8080",
-      "--master"
-    ]
+    command: ["/root/app", "--port", "8080", "--master"]
     ports:
       - "${MASTER_PORT:-8080}:8080" 
     environment:
       ENV: ${ENV:-default-from-compose}
+    networks:
+      - public
+      - private
   backend-slave-api-1:
     image: "briand787b/piqlit-backend-api:latest"
-    command: [
-      "/root/app",
-      "--port",
-      "8080"
-    ]
+    command: ["/root/app", "--port", "8080"]
     ports:
       - "${SLAVE_PORT_1:-8081}:8080"
+    networks:
+      - public
+      - private
   backend-slave-api-2:
     image: "briand787b/piqlit-backend-api:latest"
-    command: [
-      "/root/app",
-      "--port",
-      "8080"
-    ]
+    command: ["/root/app", "--port", "8080"]
     ports:
       - "${SLAVE_PORT_2:-8082}:8080"
+    networks:
+      - public
+      - private
+  db:
+    build:
+      context: ./backend/core/postgres
+      dockerfile: Dockerfile
+    image: "briand787b/piqlit-db:latest"
+    environment:
+      POSTGRES_USER:  ${POSTGRES_USER:-pl}
+      POSTGRES_PASSWORD: ${POSRGRES_PASSWORD:-pl}
+    ports:
+      - "2345:5432"
+    networks:
+      - private
+    restart: unless-stopped
+    healthcheck: 
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-pl}", "-d", "${POSTGRES_USER:-pl}"] 
+      interval: 10s 
+      timeout: 5s 
+      retries: 5
+    volumes: 
+      - db_data:/var/lib/postgresql/data 
+ 
+volumes: 
+  db_data: 
+
+networks:
+  public:
+    driver: bridge
+  private:
+    driver: bridge
+    

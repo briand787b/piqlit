@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS servers;
+
+CREATE TABLE servers (
+    id SERIAL PRIMARY KEY,
+    ip_address VARCHAR(15) NOT NULL UNIQUE,
+    is_master BOOLEAN NOT NULL DEFAULT false
+);
