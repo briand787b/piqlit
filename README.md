@@ -1,2 +1,6 @@
 # piqlit
-## Mono Repo for Piqlit Home Movie Manager
+### Mono Repo for **piqlit** Home Movie Manager
+
+## Architecture
+### Frontend
+### Backend
