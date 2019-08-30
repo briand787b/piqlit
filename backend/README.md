@@ -1,1 +1,1 @@
-# Backend for Piqlit Home Movie Manager
+# Backend for piqlit Home Movie Manager
