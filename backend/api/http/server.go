@@ -1,20 +1,18 @@
 package phttp
 
 import (
-	"net/http"
-
 	plog "github.com/briand787b/piqlit/core/log"
 	"github.com/briand787b/piqlit/core/model"
 )
 
-// Server x
-type Server interface {
+// ServerAbstract holds all the necessary values for a server, but cannot
+// itself serve HTTP (satisfy the http.Handler interface) unless it is
+// embedded in another type.  This pattern is done to improve the maintainablity
+// of this package should a new Router be substituted for Chi in the future:
+// a new Server embedding ServerAbstract would be created and its ServeHTTP
+// method would be called by http.ListenAndServe
+type ServerAbstract struct {
 	plog.Logger
 	model.MediaStore
 	model.ServerStore
-	http.Handler
 }
-
-// func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-// 	s.Mux.ServeHTTP(w, r)
-// }

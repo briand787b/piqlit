@@ -3,19 +3,20 @@ package phttp
 import "github.com/go-chi/chi"
 
 type ChiServer struct {
-	s Server
+	ServerAbstract
 	*chi.Mux
 }
 
-func NewChiServer(s Server) *ChiServer {
+func NewChiServer(s ServerAbstract) *ChiServer {
 	cs := &ChiServer{
 		s,
 		chi.NewMux(),
 	}
 
-	cs.InitRouter()
+	cs.initRouter(s)
 	return cs
 }
 
-func (cs *ChiServer) InitRouter() {
+func (cs *ChiServer) initRouter(s ServerAbstract) {
+	cs.GetMediaByID(5)
 }
