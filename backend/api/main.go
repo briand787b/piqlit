@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/briand787b/piqlit/core/model"
+	phttp "github.com/briand787b/piqlit/api/http"
 )
 
 var (
@@ -22,17 +22,13 @@ func main() {
 		env = "defualt_env"
 	}
 
-	fmt.Printf("%v\n", model.Server{})
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello, from " + env))
-	})
+	httpServer := phttp.NewChiServer(*masterFlag, &phttp.ServerArgs{})
 
 	status := "SLAVE"
 	if *masterFlag {
 		status = "MASTER"
 	}
 
-	log.Printf("STARTING %s SERVER ON PORT %v...\n", status, *portFlag)
-	log.Fatalln(http.ListenAndServe(fmt.Sprintf(":%v", *portFlag), nil))
+	log.Printf("Starting %s HTTP server on port %v...\n", status, *portFlag)
+	log.Fatalln(http.ListenAndServe(fmt.Sprintf(":%v", *portFlag), httpServer))
 }

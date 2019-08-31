@@ -1,21 +1,29 @@
 package phttp
 
-import "github.com/go-chi/chi"
+import (
+	"github.com/briand787b/piqlit/api/http/controller"
+
+	"github.com/go-chi/chi"
+)
 
 type ChiServer struct {
-	s Server
+	*ServerArgs
 	*chi.Mux
 }
 
-func NewChiServer(s Server) *ChiServer {
+// NewChiServer instantiates a new ChiServer with initialized Chi router
+func NewChiServer(isMaster bool, sa *ServerArgs) *ChiServer {
 	cs := &ChiServer{
-		s,
+		sa,
 		chi.NewMux(),
 	}
 
-	cs.InitRouter()
+	cs.initRouter(isMaster)
 	return cs
 }
 
-func (cs *ChiServer) InitRouter() {
+func (cs *ChiServer) initRouter(isMaster bool) {
+	serverC := controller.NewServerController(cs.ServerArgs.Logger, cs.ServerArgs.ServerStore)
+
+	cs.Mux.Get("/", serverC.GetAllServers)
 }
