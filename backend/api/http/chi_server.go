@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
+// ChiServer serves HTTP using the Chi router
 type ChiServer struct {
 	*ServerArgs
 	*chi.Mux
@@ -23,7 +24,7 @@ func NewChiServer(isMaster bool, sa *ServerArgs) *ChiServer {
 }
 
 func (cs *ChiServer) initRouter(isMaster bool) {
-	serverC := controller.NewServerController(cs.ServerArgs.Logger, cs.ServerArgs.ServerStore)
+	serverC := controller.NewNodeController(cs.ServerArgs.Logger, cs.ServerArgs.NodeStore)
 
-	cs.Mux.Get("/", serverC.GetAllServers)
+	cs.Mux.Get("/", serverC.GetAllNodes)
 }

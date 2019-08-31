@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS servers;
+DROP TABLE IF EXISTS nodes;
 
-CREATE TABLE servers (
+CREATE TABLE nodes (
     id SERIAL PRIMARY KEY,
     ip_address VARCHAR(15) NOT NULL UNIQUE,
     is_master BOOLEAN NOT NULL DEFAULT false,
@@ -20,9 +20,9 @@ CREATE TABLE media (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS media_servers;
+DROP TABLE IF EXISTS media_nodes;
 
-CREATE TABLE media_servers (
-    server_id INTEGER REFERENCES servers(id) NOT NULL,
+CREATE TABLE media_nodes (
+    node_id INTEGER REFERENCES nodes(id) NOT NULL,
     media_id INTEGER REFERENCES media(id) NOT NULL
 );

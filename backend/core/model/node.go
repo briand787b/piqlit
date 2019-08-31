@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-// Server represents a physical device capable of hosting and,
+// Node represents a physical device capable of hosting and,
 // potentially displaying, videos
-type Server struct {
+type Node struct {
 	ID        int        `sql:"int"`
 	IPAddress net.IPAddr `sql:"ip_address"`
 	IsMaster  bool       `sql:"is_master"`

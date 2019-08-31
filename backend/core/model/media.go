@@ -16,5 +16,5 @@ type Media struct {
 
 	// non-persistence data
 	childMedia []Media
-	servers    []Server
+	servers    []Node
 }
