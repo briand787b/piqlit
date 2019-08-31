@@ -5,13 +5,13 @@ import (
 	"github.com/briand787b/piqlit/core/model"
 )
 
-// ServerAbstract holds all the necessary values for a server, but cannot
+// ServerArgs holds all the necessary values for a server, but cannot
 // itself serve HTTP (satisfy the http.Handler interface) unless it is
 // embedded in another type.  This pattern is done to improve the maintainablity
 // of this package should a new Router be substituted for Chi in the future:
 // a new Server embedding ServerAbstract would be created and its ServeHTTP
 // method would be called by http.ListenAndServe
-type ServerAbstract struct {
+type ServerArgs struct {
 	plog.Logger
 	model.MediaStore
 	model.ServerStore
