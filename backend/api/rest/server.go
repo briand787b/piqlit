@@ -1,4 +1,4 @@
-package phttp
+package rest
 
 import (
 	plog "github.com/briand787b/piqlit/core/log"

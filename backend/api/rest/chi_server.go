@@ -1,7 +1,7 @@
-package phttp
+package rest
 
 import (
-	"github.com/briand787b/piqlit/api/http/controller"
+	"github.com/briand787b/piqlit/api/rest/controller"
 
 	"github.com/go-chi/chi"
 )

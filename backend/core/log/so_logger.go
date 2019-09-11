@@ -1,4 +1,4 @@
 package plog
 
-type SOLogger struct {
-}
+// SOLogger x
+type SOLogger struct{}
