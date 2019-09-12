@@ -4,8 +4,7 @@ services:
   backend-master-api:
     build:
       context: ./backend
-      dockerfile: ./api/Dockerfile
-    image: "briand787b/piqlit-backend-api:latest"
+      dockerfile: ./api/rest/Dockerfile
     command: ["/root/app", "--port", "8080", "--master"]
     ports:
       - "${MASTER_PORT:-8080}:8080" 
@@ -14,27 +13,10 @@ services:
     networks:
       - public
       - private
-  backend-slave-api-1:
-    image: "briand787b/piqlit-backend-api:latest"
-    command: ["/root/app", "--port", "8080"]
-    ports:
-      - "${SLAVE_PORT_1:-8081}:8080"
-    networks:
-      - public
-      - private
-  backend-slave-api-2:
-    image: "briand787b/piqlit-backend-api:latest"
-    command: ["/root/app", "--port", "8080"]
-    ports:
-      - "${SLAVE_PORT_2:-8082}:8080"
-    networks:
-      - public
-      - private
   db:
     build:
       context: ./backend/core/postgres
       dockerfile: Dockerfile
-    image: "briand787b/piqlit-db:latest"
     environment:
       POSTGRES_USER:  ${POSTGRES_USER:-pl}
       POSTGRES_PASSWORD: ${POSRGRES_PASSWORD:-pl}
@@ -51,9 +33,6 @@ services:
     volumes: 
       - db_data:/var/lib/postgresql/data 
  
-volumes: 
-  db_data: 
-
 networks:
   public:
     driver: bridge

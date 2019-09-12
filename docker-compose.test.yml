@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+  backend-master-api:
+    build:
+      context: ./backend
+      dockerfile: ./api/rest/Dockerfile
+      target: builder
+    command: [ "go", "test", "./..." ]
+  db:
+    volumes:
+      - db_test_data:/var/lib/postgresql/data
+
+volumes:
+  db_test_data:

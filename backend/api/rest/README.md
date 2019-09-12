@@ -1,1 +1,1 @@
-# piqlit HTTP API 
+# piqlit REST API 

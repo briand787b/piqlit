@@ -1,6 +1,12 @@
 #### GENERAL ####
 .env
-backend/api/api
+backend/api/rest/rest
+backend/api/grpc/grpc
+backend/cli/cli
+filesys/master/*
+filesys/slave_1/*
+filesys/slave_2/*
+
 
 #### GO ####
 # Binaries for programs and plugins
