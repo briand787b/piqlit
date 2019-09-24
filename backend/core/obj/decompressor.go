@@ -5,14 +5,17 @@ import (
 	"io"
 )
 
-type decompressor struct {
+// Decompressor is capable of reading uncompressed data
+// and having compressed data read out of it
+type Decompressor struct {
 	rc io.ReadCloser
 	gr *gzip.Reader
 	pr *io.PipeReader
 	pw *io.PipeWriter
 }
 
-func newDecompressor(rc io.ReadCloser) (*decompressor, error) {
+// NewDecompressor returns a new Decompressor
+func NewDecompressor(rc io.ReadCloser) (*Decompressor, error) {
 	gr, err := gzip.NewReader(rc)
 	if err != nil {
 		return nil, err
@@ -28,7 +31,7 @@ func newDecompressor(rc io.ReadCloser) (*decompressor, error) {
 		}
 	}()
 
-	return &decompressor{
+	return &Decompressor{
 		gr: gr,
 		pr: pr,
 		pw: pw,
@@ -36,11 +39,15 @@ func newDecompressor(rc io.ReadCloser) (*decompressor, error) {
 	}, nil
 }
 
-func (d *decompressor) Read(p []byte) (int, error) {
+// Read reads from the uncompressed stream and fills in the
+// supplied byte slice with compressed data
+func (d *Decompressor) Read(p []byte) (int, error) {
 	return d.pr.Read(p)
 }
 
-func (d *decompressor) Close() error {
+// Close closes all the associated resources of the
+// Decompressor
+func (d *Decompressor) Close() error {
 	if err := d.rc.Close(); err != nil {
 		return err
 	}
