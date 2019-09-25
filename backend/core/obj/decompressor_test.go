@@ -1,6 +1,8 @@
 package obj_test
 
 import (
+	"bytes"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -25,7 +27,7 @@ func TestDecompressor(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			cF, err := os.Open(filepath.Join("./testdata", t.Name(), "compress.gz"))
+			cF, err := os.Open(filepath.Join("testdata", t.Name(), "compress.gz"))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -36,13 +38,9 @@ func TestDecompressor(t *testing.T) {
 			}
 			defer dc.Close()
 
-			dcBS, err := ioutil.ReadAll(dc)
-			if err != nil {
+			var b bytes.Buffer
+			if _, err := io.Copy(&b, dc); err != nil {
 				t.Fatal(err)
-			}
-
-			if *update {
-				// write code here
 			}
 
 			expBS, err := ioutil.ReadFile(filepath.Join("testdata", t.Name(), tt.file))
@@ -50,7 +48,7 @@ func TestDecompressor(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if !cmp.Equal(expBS, dcBS) {
+			if !cmp.Equal(expBS, b.Bytes()) {
 				t.Fatal("expected decompressed data and actual decompressed data are different")
 			}
 		})
