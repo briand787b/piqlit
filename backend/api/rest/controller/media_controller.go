@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	plog "github.com/briand787b/piqlit/core/log"
 	"github.com/briand787b/piqlit/core/model"
+	"github.com/briand787b/piqlit/core/plog"
 )
 
 // MediaController controls the flow of HTTP routes for Media resources

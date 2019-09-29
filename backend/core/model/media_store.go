@@ -1,6 +1,7 @@
 package model
 
-// MediaStore x
+// MediaStore is anything that can store and retrieve Media records
+// from a database
 type MediaStore interface {
-	GetMediaByID(id int) (*Media, error)
+	GetByID(id int) (*Media, error)
 }

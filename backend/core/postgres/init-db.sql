@@ -1,28 +1,17 @@
-DROP TABLE IF EXISTS nodes;
-
-CREATE TABLE nodes (
-    id SERIAL PRIMARY KEY,
-    ip_address VARCHAR(15) NOT NULL UNIQUE,
-    is_master BOOLEAN NOT NULL DEFAULT false,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
 DROP TABLE IF EXISTS media;
 
 CREATE TABLE media (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(55) NOT NULL UNIQUE,
-    thumbnail_name VARCHAR(55) NOT NULL,
-    release_date TIMESTAMP NOT NULL,
-    parent_id INTEGER REFERENCES media(id),
+    name VARCHAR(55) NOT NULL UNIQUE,
+    encoding VARCHAR(55) NOT NULL,
+    upload_status VARCHAR(55) NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS media_nodes;
+DROP TABLE IF EXISTS media_media;
 
 CREATE TABLE media_nodes (
-    node_id INTEGER REFERENCES nodes(id) NOT NULL,
-    media_id INTEGER REFERENCES media(id) NOT NULL
+    parent_id INTEGER REFERENCES media(id) NOT NULL,
+    child_id INTEGER REFERENCES media(id) NOT NULL
 );
