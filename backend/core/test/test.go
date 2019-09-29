@@ -65,9 +65,9 @@ func (c *CleanFunc) Add(f func()) {
 
 // SetTimeout sets a timeout for the test, which is avoided if
 // a value is sent on the returned channel
-func SetTimeout(t *testing.T, to time.Duration) chan<- struct{} {
+func SetTimeout(to time.Duration) chan<- struct{} {
 	ch := make(chan struct{})
-	go func(t *testing.T, to time.Duration, c <-chan struct{}) {
+	go func(to time.Duration, c <-chan struct{}) {
 		tm := time.NewTimer(to)
 		select {
 		case <-c:
@@ -75,9 +75,11 @@ func SetTimeout(t *testing.T, to time.Duration) chan<- struct{} {
 				<-tm.C
 			}
 		case <-tm.C:
+			// NOTE: Cannot use t.Fatal here because its on a
+			// separate goroutine from test
 			log.Fatalf("Helper init exceeded timeout of %v\n", to)
 		}
-	}(t, to, ch)
+	}(to, ch)
 
 	return ch
 }

@@ -10,6 +10,11 @@ services:
       - "${MASTER_PORT:-8080}:8080" 
     environment:
       ENV: ${ENV:-default-from-compose}
+      PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"
+      PL_DATABASE_NAME: "${PL_DATABASE_NAME:-pl}"
+      PL_DATABASE_USER: "${PL_DATABASE_USER:-pl}"
+      PL_DATABASE_PASS: "${PL_DATABASE_PASS:-pl}"
+      PL_DATABASE_PORT: "${PL_DATABASE_PORT:-5432}"
     networks:
       - public
       - private

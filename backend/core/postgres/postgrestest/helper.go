@@ -22,7 +22,7 @@ type PGHelper struct {
 // NewPGHelper returns a new PGHelper with all
 // necessary setup/connection operations complete
 func NewPGHelper(t *testing.T) *PGHelper {
-	tc := test.SetTimeout(t, 5*time.Second)
+	tc := test.SetTimeout(5 * time.Second)
 	defer func() { tc <- struct{}{} }()
 
 	l := &plog.SOLogger{}
