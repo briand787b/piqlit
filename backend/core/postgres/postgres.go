@@ -16,11 +16,11 @@ import (
 )
 
 const (
-	dbHostEnvVar = "CS_DATABASE_HOST"
-	dbNameEnvVar = "CS_DATABASE_NAME"
-	dbUserEnvVar = "CS_DATABASE_USER"
-	dbPassEnvVar = "CS_DATABASE_PASS"
-	dbPortEnvVar = "CS_DATABASE_PORT"
+	dbHostEnvVar = "PL_DATABASE_HOST"
+	dbNameEnvVar = "PL_DATABASE_NAME"
+	dbUserEnvVar = "PL_DATABASE_USER"
+	dbPassEnvVar = "PL_DATABASE_PASS"
+	dbPortEnvVar = "PL_DATABASE_PORT"
 )
 
 var (

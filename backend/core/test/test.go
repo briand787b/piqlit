@@ -1,6 +1,7 @@
 package test
 
 import (
+	"log"
 	"testing"
 	"time"
 
@@ -74,7 +75,7 @@ func SetTimeout(t *testing.T, to time.Duration) chan<- struct{} {
 				<-tm.C
 			}
 		case <-tm.C:
-			t.Fatalf("Helper init exceeded timeout of %v", to)
+			log.Fatalf("Helper init exceeded timeout of %v\n", to)
 		}
 	}(t, to, ch)
 
