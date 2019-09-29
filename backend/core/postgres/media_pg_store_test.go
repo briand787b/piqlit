@@ -18,7 +18,20 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 		expErrToBeNil bool
 		expM          model.Media
 	}{
-		{},
+		{
+			"finding_valid_id_in_single_successful",
+			1,
+			true,
+			true,
+			model.Media{},
+		},
+		{
+			"finding_valid_id_in_multi_successful",
+			3,
+			true,
+			true,
+			model.Media{},
+		},
 	}
 
 	for _, tt := range tests {
@@ -49,6 +62,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 				t.Fatal("expected error to be nil, was ", err)
 			}
 
+			tt.expM.ID = id
 			tt.expM.CreatedAt, tt.expM.UpdatedAt = h.Tm, h.Tm
 			if !cmp.Equal(tt.expM, *retM) {
 				t.Fatalf("expected Media and returned media are not equal: %s",
