@@ -1,3 +1,4 @@
 # binaries
 Dockerfile
 README.md
+postgres/init-db.sql

@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS media;
 
 CREATE TABLE media (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(55) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL UNIQUE,
     encoding VARCHAR(55) NOT NULL,
     upload_status VARCHAR(55) NOT NULL,
     created_at TIMESTAMP NOT NULL,

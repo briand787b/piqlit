@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/briand787b/piqlit/core/model"
+	"github.com/briand787b/piqlit/core/obj"
 	"github.com/briand787b/piqlit/core/postgres"
 	"github.com/briand787b/piqlit/core/postgres/postgrestest"
 	"github.com/google/go-cmp/cmp"
@@ -23,14 +24,22 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			1,
 			true,
 			true,
-			model.Media{},
+			model.Media{
+				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_single_successful_0",
+				Encoding:     obj.GIF,
+				UploadStatus: obj.UploadInProgress,
+			},
 		},
 		{
 			"finding_valid_id_in_multi_successful",
 			3,
 			true,
 			true,
-			model.Media{},
+			model.Media{
+				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_multi_successful_2",
+				Encoding:     obj.GIF,
+				UploadStatus: obj.UploadInProgress,
+			},
 		},
 	}
 

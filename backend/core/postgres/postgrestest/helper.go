@@ -30,7 +30,7 @@ func NewPGHelper(t *testing.T) *PGHelper {
 		Helper: test.Helper{
 			T:  t,
 			L:  l,
-			Tm: time.Now(),
+			Tm: time.Now().UTC().Truncate(time.Second),
 			CF: test.NewCleaner(func() { log.Println("Postgres Cleaned!!!!") }),
 		},
 		DB:        postgres.GetExtFull(l),

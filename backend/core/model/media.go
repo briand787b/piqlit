@@ -8,14 +8,14 @@ import (
 
 // Media is a container for viewable works of art, or for child media
 type Media struct {
-	ID           int              `sql:"id"`
-	Name         string           `sql:"name"`
-	Encoding     obj.Encoding     `sql:"encoding"`
-	UploadStatus obj.UploadStatus `sql:"upload_status"`
-	CreatedAt    time.Time        `sql:"created_at"`
-	UpdatedAt    time.Time        `sql:"updated_at"`
+	ID           int              `db:"id"`
+	Name         string           `db:"name"`
+	Encoding     obj.Encoding     `db:"encoding"`
+	UploadStatus obj.UploadStatus `db:"upload_status"`
+	CreatedAt    time.Time        `db:"created_at"`
+	UpdatedAt    time.Time        `db:"updated_at"`
 
 	// non-persistence data
 	ParentID *int    `sql:"parent_id"`
-	children []Media `sql:"children"`
+	Children []Media `sql:"children"`
 }
