@@ -14,6 +14,7 @@ import (
 )
 
 func TestMediaPGStoreGetByID(t *testing.T) {
+	skipNotLive(t)
 	tests := []struct {
 		name          string
 		count         int
@@ -109,6 +110,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 }
 
 func TestMediaPGStoreInsertDelete(t *testing.T) {
+	skipNotLive(t)
 	tests := []struct {
 		name string
 		m    model.Media
