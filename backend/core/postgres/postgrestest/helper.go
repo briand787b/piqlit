@@ -37,3 +37,14 @@ func NewPGHelper(t *testing.T) *PGHelper {
 		ParentIDs: make(map[Table]int),
 	}
 }
+
+// ParentID returns the ParentID for the given Table
+func (h *PGHelper) ParentID(t Table) *int {
+	id, ok := h.ParentIDs[t]
+	if !ok {
+		defer h.Clean()
+		h.T.Fatalf("could not find parentID from table %v", t)
+	}
+
+	return &id
+}

@@ -12,10 +12,8 @@ type Media struct {
 	Name         string           `db:"name"`
 	Encoding     obj.Encoding     `db:"encoding"`
 	UploadStatus obj.UploadStatus `db:"upload_status"`
+	ParentID     *int             `db:"parent_id"`
+	Children     []Media          `db:"children"`
 	CreatedAt    time.Time        `db:"created_at"`
 	UpdatedAt    time.Time        `db:"updated_at"`
-
-	// non-persistence data
-	ParentID *int    `sql:"parent_id"`
-	Children []Media `sql:"children"`
 }

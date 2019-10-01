@@ -9,9 +9,9 @@ CREATE TABLE media (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS media_media;
+DROP TABLE IF EXISTS parent_child_media;
 
-CREATE TABLE media_nodes (
+CREATE TABLE parent_child_media (
     parent_id INTEGER REFERENCES media(id) NOT NULL,
     child_id INTEGER REFERENCES media(id) NOT NULL
 );

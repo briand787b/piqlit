@@ -18,6 +18,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 		name          string
 		count         int
 		idValid       bool
+		insChild      bool
 		expErrToBeNil bool
 		expM          model.Media
 	}{
@@ -25,6 +26,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			"finding_valid_id_in_single_successful",
 			1,
 			true,
+			false,
 			true,
 			model.Media{
 				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_single_successful_0",
@@ -36,6 +38,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			"finding_valid_id_in_multi_successful",
 			3,
 			true,
+			false,
 			true,
 			model.Media{
 				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_multi_successful_2",
@@ -48,11 +51,13 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			1,
 			false,
 			false,
+			false,
 			model.Media{},
 		},
 		{
 			"finding_invalid_id_in_multi_fails",
 			3,
+			false,
 			false,
 			false,
 			model.Media{},
@@ -68,6 +73,11 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 					id = h.CreateMedia(nil, i).ID
 				}
 			}
+
+			if tt.insChild {
+				tt.expM.Children[0].ID = h.CreateChildMedia(nil, 0).ID
+			}
+
 			defer h.Clean()
 
 			retM, err := postgres.NewMediaPGStore(h.L, h.DB).GetByID(

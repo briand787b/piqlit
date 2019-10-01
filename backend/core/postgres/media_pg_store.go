@@ -38,21 +38,42 @@ func (mps *MediaPGStore) DeleteByID(ctx context.Context, id int) error {
 	return nil
 }
 
+// FindByParentID returns a slice of model.Media with the provided parentID
+func (mps *MediaPGStore) FindByParentID(ctx context.Context, pID int) ([]model.Media, error) {
+	var m []model.Media
+	if err := sqlx.SelectContext(ctx, mps.db, &m, `
+		SELECT
+			m.id,
+			m.name,
+			m.encoding
+			m.upload_status,
+			m.created_at,
+			m.updated_at
+		FROM media m
+		INNER JOIN parent_child_media pcm
+		ON m.id = pcm.child_id
+		WHERE pcm.parent_id = $1;`,
+		pID,
+	); err != nil {
+		return nil, errors.Wrap(err, "could not execute query")
+	}
+
+	return m, nil
+}
+
 // GetByID returns a Media record by its id
 func (mps *MediaPGStore) GetByID(ctx context.Context, id int) (*model.Media, error) {
 	var m model.Media
 	if err := sqlx.GetContext(ctx, mps.db, &m, `
-		SELECT
-			id,
-			name,
-			encoding,
-			upload_status,
-			created_at,
-			updated_at
-		FROM 
-			media
-		WHERE
-			id = $1;`,
+	SELECT
+		id,
+		name,
+		encoding,
+		upload_status,
+		created_at,
+		updated_at
+	FROM media
+	WHERE id = $1;`,
 		id,
 	); err != nil {
 		return nil, errors.Wrap(err, "could not execute query")

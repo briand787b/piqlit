@@ -17,8 +17,7 @@ services:
       "test", 
       "./...", 
       "-timeout",
-      "30s",
-      "-v"
+      "30s"
     ]
     networks: 
       - private  
