@@ -19,7 +19,6 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 		name          string
 		count         int
 		idValid       bool
-		insChild      bool
 		expErrToBeNil bool
 		expM          model.Media
 	}{
@@ -27,7 +26,6 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			"finding_valid_id_in_single_successful",
 			1,
 			true,
-			false,
 			true,
 			model.Media{
 				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_single_successful_0",
@@ -39,7 +37,6 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			"finding_valid_id_in_multi_successful",
 			3,
 			true,
-			false,
 			true,
 			model.Media{
 				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_multi_successful_2",
@@ -52,13 +49,11 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			1,
 			false,
 			false,
-			false,
 			model.Media{},
 		},
 		{
 			"finding_invalid_id_in_multi_fails",
 			3,
-			false,
 			false,
 			false,
 			model.Media{},
@@ -73,10 +68,6 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 				if tt.idValid {
 					id = h.CreateMedia(nil, i).ID
 				}
-			}
-
-			if tt.insChild {
-				tt.expM.Children[0].ID = h.CreateChildMedia(nil, 0).ID
 			}
 
 			defer h.Clean()
@@ -156,6 +147,32 @@ func TestMediaPGStoreInsertDelete(t *testing.T) {
 			if _, err := mps.GetByID(ctx, tt.m.ID); err == nil {
 				t.Fatal("expected error to be non-nil, was nil")
 			}
+		})
+	}
+}
+
+func TestAssociateParentIDWithChildIDs(t *testing.T) {
+	skipNotLive(t)
+	tests := []struct {
+		name          string
+		numChildren   int
+		expErrToBeNil bool
+	}{
+		{},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := postgrestest.NewPGHelper(t)
+			pm := h.CreateMedia(nil, 0)
+			var cms []model.Media
+			for i := 0; i < tt.numChildren; i++ {
+				cms = append(cms, h.CreateMedia(nil, i))
+			}
+
+			mps := postgres.NewMediaPGStore(h.L, h.DB)
+			ctx := context.Background()
+
 		})
 	}
 }

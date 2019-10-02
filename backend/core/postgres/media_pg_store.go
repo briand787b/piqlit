@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/plog"
@@ -22,7 +23,40 @@ func NewMediaPGStore(l plog.Logger, db psql.ExtFull) *MediaPGStore {
 	return &MediaPGStore{l: l, db: db}
 }
 
-// DeleteByID deletes a Media by its id
+// AssociateParentIDWithChildIDs inserts a row into the parent_child_media table
+func (mps *MediaPGStore) AssociateParentIDWithChildIDs(ctx context.Context, pID int, cIDs ...int) error {
+	if cIDs == nil || len(cIDs) < 1 {
+		return nil
+	}
+
+	baseQ := `INSERT INTO parent_child_media
+	(
+		parent_id,
+		child_id
+	)
+	VALUES
+	`
+
+	args := make([]interface{}, 2*len(cIDs))
+	var cnt int
+	for i, cID := range cIDs {
+		cnt = i * 2
+		baseQ += fmt.Sprintf("($%v, $%v),\n", cnt, cnt+1)
+		args[cnt] = pID
+		args[cnt+1] = cID
+	}
+
+	baseQ = baseQ[:len(baseQ)-1] + ";"
+
+	var id int
+	if err := sqlx.GetContext(ctx, mps.db, &id, baseQ, args...); err != nil {
+		return errors.Wrap(err, "could not execute query")
+	}
+
+	return nil
+}
+
+// DeleteByID deletes a Media record by its id
 func (mps *MediaPGStore) DeleteByID(ctx context.Context, id int) error {
 	var i int
 	if err := sqlx.GetContext(ctx, mps.db, &i, `
@@ -38,8 +72,37 @@ func (mps *MediaPGStore) DeleteByID(ctx context.Context, id int) error {
 	return nil
 }
 
-// FindByParentID returns a slice of model.Media with the provided parentID
-func (mps *MediaPGStore) FindByParentID(ctx context.Context, pID int) ([]model.Media, error) {
+// DisassociateParentIDFromChildIDs deletes records from the parent_child_media table where the parent_id
+// equals pID and the cID is in the set of cIDs
+func (mps *MediaPGStore) DisassociateParentIDFromChildIDs(ctx context.Context, pID int, cIDs ...int) error {
+	if cIDs == nil || len(cIDs) < 1 {
+		return nil
+	}
+
+	qry, args, err := sqlx.In(`
+		DELETE FROM parent_child_media 
+		WHERE 
+			parent_id = $1 
+			AND child_id IN (?)
+		RETURNING child_id;`,
+		cIDs,
+	)
+	if err != nil {
+		return errors.Wrap(err, "could not format `IN` query")
+	}
+
+	qry = mps.db.Rebind(qry)
+
+	var deletedChildIDs []int
+	if err := sqlx.SelectContext(ctx, mps.db, &deletedChildIDs, qry, args...); err != nil {
+		return errors.Wrap(err, "could not execute query")
+	}
+
+	return nil
+}
+
+// SelectByParentID returns a slice of model.Media with the provided parentID
+func (mps *MediaPGStore) SelectByParentID(ctx context.Context, pID int) ([]model.Media, error) {
 	var m []model.Media
 	if err := sqlx.SelectContext(ctx, mps.db, &m, `
 		SELECT
