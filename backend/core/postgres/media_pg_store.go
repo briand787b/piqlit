@@ -41,12 +41,12 @@ func (mps *MediaPGStore) AssociateParentIDWithChildIDs(ctx context.Context, pID 
 	var cnt int
 	for i, cID := range cIDs {
 		cnt = i * 2
-		baseQ += fmt.Sprintf("($%v, $%v),\n", cnt, cnt+1)
+		baseQ += fmt.Sprintf("($%v, $%v),\n", cnt+1, cnt+2)
 		args[cnt] = pID
 		args[cnt+1] = cID
 	}
 
-	baseQ = baseQ[:len(baseQ)-1] + ";"
+	baseQ = baseQ[:len(baseQ)-2] + " RETURNING parent_id;"
 
 	var id int
 	if err := sqlx.GetContext(ctx, mps.db, &id, baseQ, args...); err != nil {
@@ -82,10 +82,10 @@ func (mps *MediaPGStore) DisassociateParentIDFromChildIDs(ctx context.Context, p
 	qry, args, err := sqlx.In(`
 		DELETE FROM parent_child_media 
 		WHERE 
-			parent_id = $1 
+			parent_id = ?
 			AND child_id IN (?)
 		RETURNING child_id;`,
-		cIDs,
+		pID, cIDs,
 	)
 	if err != nil {
 		return errors.Wrap(err, "could not format `IN` query")
@@ -108,7 +108,7 @@ func (mps *MediaPGStore) SelectByParentID(ctx context.Context, pID int) ([]model
 		SELECT
 			m.id,
 			m.name,
-			m.encoding
+			m.encoding,
 			m.upload_status,
 			m.created_at,
 			m.updated_at

@@ -18,6 +18,8 @@ services:
     networks:
       - public
       - private
+    depends_on:
+      - db
   db:
     build:
       context: ./backend/core/postgres

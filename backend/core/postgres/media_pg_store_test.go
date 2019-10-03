@@ -11,6 +11,7 @@ import (
 	"github.com/briand787b/piqlit/core/postgres/postgrestest"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestMediaPGStoreGetByID(t *testing.T) {
@@ -151,28 +152,74 @@ func TestMediaPGStoreInsertDelete(t *testing.T) {
 	}
 }
 
-func TestAssociateParentIDWithChildIDs(t *testing.T) {
+func TestMediaParentChildAssociateDisassociateByID(t *testing.T) {
 	skipNotLive(t)
 	tests := []struct {
-		name          string
-		numChildren   int
-		expErrToBeNil bool
+		name        string
+		numChildren int
 	}{
-		{},
+		{
+			"associates_to_one_child",
+			1,
+		},
+		{
+			"associates_to_two_children",
+			2,
+		},
+		{
+			"associates_to_three_children",
+			3,
+		},
+		{
+			"associates_to_no_children",
+			0,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := postgrestest.NewPGHelper(t)
 			pm := h.CreateMedia(nil, 0)
-			var cms []model.Media
+			defer h.Clean()
+			cms := make([]model.Media, tt.numChildren)
+			cmIDs := make([]int, tt.numChildren)
 			for i := 0; i < tt.numChildren; i++ {
-				cms = append(cms, h.CreateMedia(nil, i))
+				cms[i] = *h.CreateMedia(nil, i+1)
+				cmIDs[i] = cms[i].ID
 			}
 
 			mps := postgres.NewMediaPGStore(h.L, h.DB)
 			ctx := context.Background()
 
+			if err := mps.AssociateParentIDWithChildIDs(ctx, pm.ID, cmIDs...); err != nil {
+				t.Fatal("failed to prove parent-child media association: ", err)
+			}
+
+			defer mps.DisassociateParentIDFromChildIDs(ctx, pm.ID, cmIDs...)
+
+			retCMs, err := mps.SelectByParentID(ctx, pm.ID)
+			if err != nil {
+				t.Fatal("failed to get associated parent media with children: ", err)
+			}
+
+			if !cmp.Equal(cms, retCMs, cmpopts.EquateEmpty()) {
+				t.Fatal("expected ChildMedia not equal to returned child media: ",
+					cmp.Diff(cms, retCMs, cmpopts.EquateEmpty()),
+				)
+			}
+
+			if err := mps.DisassociateParentIDFromChildIDs(ctx, pm.ID, cmIDs...); err != nil {
+				t.Fatal("could not disassociate parent media from children: ", err)
+			}
+
+			retCMs, err = mps.SelectByParentID(ctx, pm.ID)
+			if err != nil {
+				t.Fatal("failed to prove parent-child media disassociation: ", err)
+			}
+
+			if len(retCMs) != 0 {
+				t.Fatalf("expected returned child media to equal 0, returned %v", len(retCMs))
+			}
 		})
 	}
 }
