@@ -38,7 +38,7 @@ services:
       timeout: 5s 
       retries: 5
     volumes:
-      - ${DB_VOL:-db_data}:/var/lib/postgresql/data 
+      - ${PL_DB_VOL:-db_data}:/var/lib/postgresql/data 
  
 networks:
   public:
