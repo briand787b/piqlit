@@ -22,10 +22,4 @@ services:
       "-v"
     ]
     networks: 
-      - private  
-  db:
-    volumes:
-      - db_test_data:/var/lib/postgresql/data
-
-volumes:
-  db_test_data:
+      - private

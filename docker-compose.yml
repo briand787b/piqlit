@@ -37,10 +37,15 @@ services:
       interval: 10s 
       timeout: 5s 
       retries: 5
+    volumes:
+      - ${DB_VOL:-db_data}:/var/lib/postgresql/data 
  
 networks:
   public:
     driver: bridge
   private:
     driver: bridge
-    
+
+volumes:
+  db_data:    
+  db_test_data:
