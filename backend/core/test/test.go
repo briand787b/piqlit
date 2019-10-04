@@ -1,12 +1,27 @@
 package test
 
 import (
+	"flag"
 	"log"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/briand787b/piqlit/core/plog"
 )
+
+var live = flag.Bool("live", false, "use live dependencies - pkg dependent")
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+	os.Exit(m.Run())
+}
+
+func SkipNotLive(t *testing.T) {
+	if !*live {
+		t.Skip()
+	}
+}
 
 // Helper is a testing utility that facilitates rolling back
 // whatever changes were made to persistent storage during
