@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	// ErrValidation is when validation of the resource failed
-	ErrValidation = errors.New("resource is invalid")
+	// ErrInvalid is when validation of the resource failed
+	ErrInvalid = errors.New("request invalid")
 
 	// ErrNotFound is when the request resource does not exist
 	ErrNotFound = errors.New("resource could not be found")
@@ -30,7 +30,7 @@ func GetExternalMsg(e error) string {
 	}
 
 	switch c := errors.Cause(e); {
-	case c == ErrValidation:
+	case c == ErrInvalid:
 		if es := strings.Split(e.Error(), ":"); len(es) > 1 {
 			return strings.TrimSpace(fmt.Sprintf("%s: %s", es[len(es)-1], es[len(es)-2]))
 		}
@@ -51,9 +51,9 @@ func GetInternalMsg(e error) string {
 	return e.Error()
 }
 
-// NewErrValidation returns a wrapped ErrValidation
-func NewErrValidation(reasonMsg string) error {
-	err := errors.Wrap(ErrValidation, reasonMsg)
+// NewErrInvalid returns a wrapped ErrInvalid
+func NewErrInvalid(reasonMsg string) error {
+	err := errors.Wrap(ErrInvalid, reasonMsg)
 	return err
 }
 

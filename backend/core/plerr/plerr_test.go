@@ -20,9 +20,9 @@ func TestErrCause(t *testing.T) {
 		{"1_layer_in_tact", sql.ErrNoRows, []string{"a"}, sql.ErrNoRows},
 		{"2_layers_in_tact", sql.ErrNoRows, []string{"a", "b"}, sql.ErrNoRows},
 		{"3_layers_in_tact", sql.ErrNoRows, []string{"a", "b", "c"}, sql.ErrNoRows},
-		{"empty_val_in_tact", plerr.NewErrValidation(""), []string{"a"}, plerr.ErrValidation},
-		{"full_val_in_tact", plerr.NewErrValidation("z"), []string{"a"}, plerr.ErrValidation},
-		{"2_layer_full_val_in_tact", plerr.NewErrValidation("z"), []string{"a", "b"}, plerr.ErrValidation},
+		{"empty_val_in_tact", plerr.NewErrInvalid(""), []string{"a"}, plerr.ErrInvalid},
+		{"full_val_in_tact", plerr.NewErrInvalid("z"), []string{"a"}, plerr.ErrInvalid},
+		{"2_layer_full_val_in_tact", plerr.NewErrInvalid("z"), []string{"a", "b"}, plerr.ErrInvalid},
 		{"empty_not_found_in_tact", plerr.NewErrNotFound(nil), []string{"a"}, plerr.ErrNotFound},
 		{"full_not_found_in_tact", plerr.NewErrNotFound(sql.ErrNoRows), []string{"a"}, plerr.ErrNotFound},
 		{"2_layer_not_found_in_tact", plerr.NewErrNotFound(sql.ErrNoRows), []string{"a", "b"}, plerr.ErrNotFound},
@@ -56,8 +56,8 @@ func TestGetExternalMgs(t *testing.T) {
 		{"1_err_returns_its_msg", []error{errors.New("a")}, "a"},
 		{"2_errs_returns_1st_msg", []error{errors.New("a"), errors.New("b")}, "a"},
 		{"3_errs_returns_1st_msg", []error{errors.New("a"), errors.New("b"), errors.New("c")}, "a"},
-		{"base_val_returns_cause_msg", []error{plerr.ErrValidation}, "resource is invalid"},
-		{"val_returns_internal+provided_msg", []error{plerr.NewErrValidation("a")}, "resource is invalid: a"},
+		{"base_val_returns_cause_msg", []error{plerr.ErrInvalid}, "request invalid"},
+		{"val_returns_internal+provided_msg", []error{plerr.NewErrInvalid("a")}, "request invalid: a"},
 	}
 
 	for _, tt := range tests {
