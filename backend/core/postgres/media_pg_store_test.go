@@ -7,27 +7,30 @@ import (
 
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/obj"
+	"github.com/briand787b/piqlit/core/plerr"
 	"github.com/briand787b/piqlit/core/postgres"
 	"github.com/briand787b/piqlit/core/postgres/postgrestest"
+	"github.com/briand787b/piqlit/core/test"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/pkg/errors"
 )
 
 func TestMediaPGStoreGetByID(t *testing.T) {
-	skipNotLive(t)
+	test.SkipNotLive(t)
 	tests := []struct {
-		name          string
-		count         int
-		idValid       bool
-		expErrToBeNil bool
-		expM          model.Media
+		name       string
+		count      int
+		idValid    bool
+		expBaseErr error
+		expM       model.Media
 	}{
 		{
 			"finding_valid_id_in_single_successful",
 			1,
 			true,
-			true,
+			nil,
 			model.Media{
 				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_single_successful_0",
 				Encoding:     obj.GIF,
@@ -38,7 +41,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			"finding_valid_id_in_multi_successful",
 			3,
 			true,
-			true,
+			nil,
 			model.Media{
 				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_multi_successful_2",
 				Encoding:     obj.GIF,
@@ -49,14 +52,14 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			"finding_invalid_id_in_single_fails",
 			1,
 			false,
-			false,
+			plerr.ErrNotFound,
 			model.Media{},
 		},
 		{
 			"finding_invalid_id_in_multi_fails",
 			3,
 			false,
-			false,
+			plerr.ErrNotFound,
 			model.Media{},
 		},
 	}
@@ -78,16 +81,14 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 				id,
 			)
 
-			if !tt.expErrToBeNil {
-				if err == nil {
-					t.Fatal("expected error to be non-nil, was nil")
-				}
-
-				return
+			if e := errors.Cause(err); !cmp.Equal(tt.expBaseErr, e) {
+				t.Fatal("expected error not equal to returned error: ",
+					cmp.Diff(tt.expBaseErr, e),
+				)
 			}
 
-			if err != nil {
-				t.Fatal("expected error to be nil, was ", err)
+			if tt.expBaseErr != nil {
+				return
 			}
 
 			tt.expM.ID = id
@@ -102,7 +103,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 }
 
 func TestMediaPGStoreInsertDelete(t *testing.T) {
-	skipNotLive(t)
+	test.SkipNotLive(t)
 	tests := []struct {
 		name string
 		m    model.Media
@@ -153,7 +154,7 @@ func TestMediaPGStoreInsertDelete(t *testing.T) {
 }
 
 func TestMediaParentChildAssociateDisassociateByID(t *testing.T) {
-	skipNotLive(t)
+	test.SkipNotLive(t)
 	tests := []struct {
 		name        string
 		numChildren int

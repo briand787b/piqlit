@@ -2,9 +2,11 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/briand787b/piqlit/core/model"
+	"github.com/briand787b/piqlit/core/plerr"
 	"github.com/briand787b/piqlit/core/plog"
 	"github.com/briand787b/piqlit/core/psql"
 
@@ -116,7 +118,11 @@ func (mps *MediaPGStore) GetByID(ctx context.Context, id int) (*model.Media, err
 	WHERE id = $1;`,
 		id,
 	); err != nil {
-		return nil, errors.Wrap(err, "could not execute query")
+		if err == sql.ErrNoRows {
+			return nil, plerr.NewErrNotFound(err)
+		}
+
+		return nil, plerr.NewErrInternal(err)
 	}
 
 	return &m, nil
