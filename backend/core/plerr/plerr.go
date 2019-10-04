@@ -65,3 +65,12 @@ func NewErrNotFound(e error) error {
 
 	return errors.Wrap(ErrNotFound, e.Error())
 }
+
+// NewErrInternal returns a wrapped ErrNewInternal
+func NewErrInternal(e error) error {
+	if e == nil {
+		e = errors.New("WARNING: nil error provided to `NewErrInternal()`")
+	}
+
+	return errors.Wrap(ErrInternal, e.Error())
+}

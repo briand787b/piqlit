@@ -26,6 +26,9 @@ func TestErrCause(t *testing.T) {
 		{"empty_not_found_in_tact", plerr.NewErrNotFound(nil), []string{"a"}, plerr.ErrNotFound},
 		{"full_not_found_in_tact", plerr.NewErrNotFound(sql.ErrNoRows), []string{"a"}, plerr.ErrNotFound},
 		{"2_layer_not_found_in_tact", plerr.NewErrNotFound(sql.ErrNoRows), []string{"a", "b"}, plerr.ErrNotFound},
+		{"empty_internal_in_tact", plerr.NewErrInternal(nil), []string{"a"}, plerr.ErrInternal},
+		{"full_internal_in_tact", plerr.NewErrInternal(sql.ErrNoRows), []string{"a"}, plerr.ErrInternal},
+		{"2_layer_internal_in_tact", plerr.NewErrInternal(sql.ErrNoRows), []string{"a", "b"}, plerr.ErrInternal},
 	}
 
 	for _, tt := range tests {
