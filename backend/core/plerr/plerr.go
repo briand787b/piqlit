@@ -32,7 +32,7 @@ func GetExternalMsg(e error) string {
 	switch c := errors.Cause(e); {
 	case c == ErrValidation:
 		if es := strings.Split(e.Error(), ":"); len(es) > 1 {
-			return fmt.Sprintf("%s: %s", strings.TrimSpace(es[len(es)-1]), es[len(es)-2])
+			return strings.TrimSpace(fmt.Sprintf("%s: %s", es[len(es)-1], es[len(es)-2]))
 		}
 
 		fallthrough
