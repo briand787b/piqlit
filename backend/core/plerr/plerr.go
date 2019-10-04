@@ -7,8 +7,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Error backs all custom error types of plerr.
+// It allows direct comparisons of error values
 type Error string
 
+// Error allows Error to satisfy the error interface
 func (e Error) Error() string { return string(e) }
 
 const (
