@@ -1,6 +1,11 @@
 package plerr
 
-import "github.com/pkg/errors"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/pkg/errors"
+)
 
 // // ValidationErr is when the attempted operation fails validation
 // // due to invalid user input
@@ -24,7 +29,16 @@ func GetExternalMsg(e error) string {
 		return ""
 	}
 
-	return errors.Cause(e).Error()
+	switch c := errors.Cause(e); {
+	case c == ErrValidation:
+		if es := strings.Split(e.Error(), ":"); len(es) > 1 {
+			return fmt.Sprintf("%s: %s", strings.TrimSpace(es[len(es)-1]), es[len(es)-2])
+		}
+
+		fallthrough
+	default:
+		return c.Error()
+	}
 }
 
 func GetInternalMsg(e error) string {
@@ -36,7 +50,8 @@ func GetInternalMsg(e error) string {
 }
 
 func NewErrValidation(reasonMsg string) error {
-	return errors.WithMessage(ErrValidation, reasonMsg)
+	err := errors.Wrap(ErrValidation, reasonMsg)
+	return err
 }
 
 func NewErrNotFound(e error) error {

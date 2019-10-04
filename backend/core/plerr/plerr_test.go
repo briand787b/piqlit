@@ -56,6 +56,8 @@ func TestGetExternalMgs(t *testing.T) {
 		{"1_err_returns_its_msg", []error{errors.New("a")}, "a"},
 		{"2_errs_returns_1st_msg", []error{errors.New("a"), errors.New("b")}, "a"},
 		{"3_errs_returns_1st_msg", []error{errors.New("a"), errors.New("b"), errors.New("c")}, "a"},
+		{"base_val_returns_cause_msg", []error{plerr.ErrValidation}, "resource is invalid"},
+		{"val_returns_internal+provided_msg", []error{plerr.NewErrValidation("a")}, "resource is invalid: a"},
 	}
 
 	for _, tt := range tests {
