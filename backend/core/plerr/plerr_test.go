@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/briand787b/piqlit/core/plerr"
+	_ "github.com/briand787b/piqlit/core/test"
 
 	"github.com/pkg/errors"
 )

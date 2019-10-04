@@ -7,19 +7,23 @@ import (
 	"github.com/pkg/errors"
 )
 
-var (
+type Error string
+
+func (e Error) Error() string { return string(e) }
+
+const (
 	// ErrInvalid is when validation of the resource failed
-	ErrInvalid = errors.New("request invalid")
+	ErrInvalid = Error("request invalid")
 
 	// ErrNotFound is when the request resource does not exist
-	ErrNotFound = errors.New("resource could not be found")
+	ErrNotFound = Error("resource could not be found")
 
 	// ErrUnauthorized is when the requestor is unauthorized to perform
 	// the requested action
-	ErrUnauthorized = errors.New("authorization failed")
+	ErrUnauthorized = Error("authorization failed")
 
 	// ErrInternal is when an error results from internal software failures
-	ErrInternal = errors.New("internal server error")
+	ErrInternal = Error("internal server error")
 )
 
 // GetExternalMsg extracts the message for the error that is suitable
