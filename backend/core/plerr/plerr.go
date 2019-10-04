@@ -7,23 +7,23 @@ import (
 	"github.com/pkg/errors"
 )
 
-// // ValidationErr is when the attempted operation fails validation
-// // due to invalid user input
-// type ValidationErr error
-
 var (
 	// ErrValidation is when validation of the resource failed
 	ErrValidation = errors.New("resource is invalid")
 
-	// ErrNotFound x
+	// ErrNotFound is when the request resource does not exist
 	ErrNotFound = errors.New("resource could not be found")
 
-	// ErrUnauthorized x
+	// ErrUnauthorized is when the requestor is unauthorized to perform
+	// the requested action
 	ErrUnauthorized = errors.New("authorization failed")
 
-	ErrServerErr = errors.New("internal server error")
+	// ErrInternal is when an error results from internal software failures
+	ErrInternal = errors.New("internal server error")
 )
 
+// GetExternalMsg extracts the message for the error that is suitable
+// for displaying externally
 func GetExternalMsg(e error) string {
 	if e == nil {
 		return ""
@@ -41,6 +41,8 @@ func GetExternalMsg(e error) string {
 	}
 }
 
+// GetInternalMsg extracts the message for the error that is suitable
+// for internal logging
 func GetInternalMsg(e error) string {
 	if e == nil {
 		return ""
@@ -49,11 +51,13 @@ func GetInternalMsg(e error) string {
 	return e.Error()
 }
 
+// NewErrValidation returns a wrapped ErrValidation
 func NewErrValidation(reasonMsg string) error {
 	err := errors.Wrap(ErrValidation, reasonMsg)
 	return err
 }
 
+// NewErrNotFound returns a wrapped ErrNotFound
 func NewErrNotFound(e error) error {
 	if e == nil {
 		e = errors.New("WARNING: nil error provided to `NewErrNotFound()`")
