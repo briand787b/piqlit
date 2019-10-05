@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/briand787b/piqlit/core/plog"
+	"github.com/briand787b/piqlit/core/plogtest"
 	"github.com/briand787b/piqlit/core/postgres"
 	"github.com/briand787b/piqlit/core/psql"
 	"github.com/briand787b/piqlit/core/test"
@@ -25,7 +26,7 @@ func NewPGHelper(t *testing.T) *PGHelper {
 	tc := test.SetTimeout(5 * time.Second)
 	defer func() { tc <- struct{}{} }()
 
-	l := &plog.SOLogger{}
+	l := plog.Logger{L: &plogtest.SpyLogger{}}
 	return &PGHelper{
 		Helper: test.Helper{
 			T:  t,

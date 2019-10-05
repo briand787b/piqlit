@@ -30,7 +30,7 @@ func (h *PGHelper) CreateMedia(m *model.Media, index int) *model.Media {
 		h.T.Fatal("could not create Media: ", err)
 	}
 
-	h.L.Infow("created Media", "ID", m.ID)
+	h.L.Info("created Media", "ID", m.ID)
 
 	h.CF.Add(func() {
 		if err := ms.DeleteByID(context.Background(), m.ID); err != nil {

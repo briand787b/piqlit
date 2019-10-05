@@ -18,7 +18,7 @@ type ExtFull interface {
 
 // GetExtFull returns an implementation of ExtFull backed by
 // whatever database underlies the db variable provided to it.
-func GetExtFull(l plog.Logger, db *sqlx.DB) ExtFull {
+func GetExtFull(l *plog.Logger, db *sqlx.DB) ExtFull {
 	return struct {
 		binder
 		sqlx.Execer
@@ -28,19 +28,19 @@ func GetExtFull(l plog.Logger, db *sqlx.DB) ExtFull {
 	}{
 		db,
 		&execLogger{
-			logger: l,
+			logger: *l,
 			execer: db,
 		},
 		&execContextLogger{
-			logger:        l,
+			logger:        *l,
 			execerContext: db,
 		},
 		&queryLogger{
-			logger:  l,
+			logger:  *l,
 			queryer: db,
 		},
 		&queryContextLogger{
-			logger:         l,
+			logger:         *l,
 			queryerContext: db,
 		},
 	}
