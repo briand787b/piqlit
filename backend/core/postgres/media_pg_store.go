@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/briand787b/piqlit/core/model"
-	"github.com/briand787b/piqlit/core/plerr"
+	"github.com/briand787b/piqlit/core/perr"
 	"github.com/briand787b/piqlit/core/plog"
 	"github.com/briand787b/piqlit/core/psql"
 
@@ -119,10 +119,10 @@ func (mps *MediaPGStore) GetByID(ctx context.Context, id int) (*model.Media, err
 		id,
 	); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, plerr.NewErrNotFound(err)
+			return nil, perr.NewErrNotFound(err)
 		}
 
-		return nil, plerr.NewErrInternal(err)
+		return nil, perr.NewErrInternal(err)
 	}
 
 	return &m, nil

@@ -1,4 +1,4 @@
-package plerr
+package perr
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Error backs all custom error types of plerr.
+// Error backs all custom error types of perr.
 // It allows direct comparisons of error values
 type Error string
 

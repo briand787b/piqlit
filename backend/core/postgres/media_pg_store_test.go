@@ -7,7 +7,7 @@ import (
 
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/obj"
-	"github.com/briand787b/piqlit/core/plerr"
+	"github.com/briand787b/piqlit/core/perr"
 	"github.com/briand787b/piqlit/core/postgres"
 	"github.com/briand787b/piqlit/core/postgres/postgrestest"
 	"github.com/briand787b/piqlit/core/test"
@@ -52,14 +52,14 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			"finding_invalid_id_in_single_fails",
 			1,
 			false,
-			plerr.ErrNotFound,
+			perr.ErrNotFound,
 			model.Media{},
 		},
 		{
 			"finding_invalid_id_in_multi_fails",
 			3,
 			false,
-			plerr.ErrNotFound,
+			perr.ErrNotFound,
 			model.Media{},
 		},
 	}
