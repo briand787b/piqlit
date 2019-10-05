@@ -1,3 +1,5 @@
+DROP INDEX IF EXISTS parent_child_media_index;
+DROP TABLE IF EXISTS parent_child_media;
 DROP TABLE IF EXISTS media;
 
 CREATE TABLE media (
@@ -9,9 +11,10 @@ CREATE TABLE media (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS parent_child_media;
-
 CREATE TABLE parent_child_media (
     parent_id INTEGER REFERENCES media(id) NOT NULL,
     child_id INTEGER REFERENCES media(id) NOT NULL
 );
+
+CREATE UNIQUE INDEX parent_child_media_index 
+ON parent_child_media (parent_id, child_id);
