@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/briand787b/piqlit/core/plog"
-	"github.com/briand787b/piqlit/core/plogtest"
+	"github.com/briand787b/piqlit/core/plog/plogtest"
 	"github.com/briand787b/piqlit/core/postgres"
 	"github.com/briand787b/piqlit/core/psql"
 	"github.com/briand787b/piqlit/core/test"
@@ -26,7 +26,7 @@ func NewPGHelper(t *testing.T) *PGHelper {
 	tc := test.SetTimeout(5 * time.Second)
 	defer func() { tc <- struct{}{} }()
 
-	l := plog.Logger{L: &plogtest.SpyLogger{}}
+	l := plog.Logger{L: &plogtest.SpyLogWriter{}}
 	return &PGHelper{
 		Helper: test.Helper{
 			T:  t,
@@ -34,7 +34,7 @@ func NewPGHelper(t *testing.T) *PGHelper {
 			Tm: time.Now().UTC().Truncate(time.Second),
 			CF: test.NewCleaner(func() { log.Println("Postgres Cleaned!!!!") }),
 		},
-		DB:        postgres.GetExtFull(l),
+		DB:        postgres.GetExtFull(&l),
 		ParentIDs: make(map[Table]int),
 	}
 }
