@@ -1,6 +1,6 @@
 package plogtest
 
-// SpyLogWriter is a spying implementation of plog.Logger
+// SpyLogWriter is a spying implementation of plog.LogWriter
 type SpyLogWriter struct {
 	PrintlnCallCount int
 	PrintlnArgs      []interface{}

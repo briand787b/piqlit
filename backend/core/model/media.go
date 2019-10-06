@@ -26,7 +26,7 @@ type Media struct {
 
 // Validate returns an error if the Media is not properly
 // configured for persistent storage
-func (m *Media) Validate(l *plog.Logger) error {
+func (m *Media) Validate(l plog.Logger) error {
 	if m.Name == "" {
 		l.Info("Media failed validation", "reason", "empty name")
 		return perr.NewErrInvalid("Media.Name cannot be empty")
