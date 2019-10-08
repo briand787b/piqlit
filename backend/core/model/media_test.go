@@ -21,6 +21,14 @@ func TestMediaValidate(t *testing.T) {
 		expReason  string
 	}{
 		{
+			"media_with_full_fields_passes",
+			model.Media{
+				Name: "full_name",
+			},
+			nil,
+			"",
+		},
+		{
 			"media_with_empty_name_fails",
 			model.Media{},
 			perr.ErrInvalid,
