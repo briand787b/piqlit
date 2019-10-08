@@ -15,4 +15,5 @@ type Logger interface {
 
 	// specific event logging
 	Invalid(ctx context.Context, subj interface{}, reason string)
+	Query(ctx context.Context, qry string, args ...interface{})
 }

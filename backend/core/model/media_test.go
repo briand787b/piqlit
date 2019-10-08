@@ -6,7 +6,6 @@ import (
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/perr"
 	"github.com/briand787b/piqlit/core/plog/plogtest"
-	_ "github.com/briand787b/piqlit/core/test"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"

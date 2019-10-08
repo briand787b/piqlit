@@ -1,11 +1,11 @@
 package postgrestest
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/obj"
+	"github.com/briand787b/piqlit/core/plog/plogtest"
 	"github.com/briand787b/piqlit/core/postgres"
 )
 
@@ -21,19 +21,20 @@ func (h *PGHelper) CreateMedia(m *model.Media, index int) *model.Media {
 		}
 	}
 
+	ctx := plogtest.SpannedTracedCtx()
 	ms := postgres.NewMediaPGStore(h.L, h.DB)
 	if err := ms.Insert(
-		context.Background(),
+		ctx,
 		m,
 	); err != nil {
 		defer h.Clean()
 		h.T.Fatal("could not create Media: ", err)
 	}
 
-	h.L.Info("created Media", "ID", m.ID)
+	h.L.Info(ctx, "created Media", "ID", m.ID)
 
 	h.CF.Add(func() {
-		if err := ms.DeleteByID(context.Background(), m.ID); err != nil {
+		if err := ms.DeleteByID(ctx, m.ID); err != nil {
 			h.T.Fatal("could not delete Media")
 		}
 	})

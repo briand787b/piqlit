@@ -18,7 +18,7 @@ import (
 )
 
 func TestMediaPGStoreGetByID(t *testing.T) {
-	test.SkipNotLive(t)
+	test.SkipLong(t)
 	tests := []struct {
 		name       string
 		count      int
@@ -103,7 +103,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 }
 
 func TestMediaPGStoreInsertDelete(t *testing.T) {
-	test.SkipNotLive(t)
+	test.SkipLong(t)
 	tests := []struct {
 		name string
 		m    model.Media
@@ -154,7 +154,7 @@ func TestMediaPGStoreInsertDelete(t *testing.T) {
 }
 
 func TestMediaParentChildAssociateDisassociateByID(t *testing.T) {
-	test.SkipNotLive(t)
+	test.SkipLong(t)
 	tests := []struct {
 		name        string
 		numChildren int

@@ -21,6 +21,10 @@ type MockLogger struct {
 	InvalidCallCount int
 	InvalidArgSub    []interface{}
 	InvalidArgReason []string
+
+	QueryCallCount int
+	QueryArgQry    []string
+	QueryArgArgs   [][]interface{}
 }
 
 // Error x
@@ -42,4 +46,11 @@ func (m *MockLogger) Invalid(ctx context.Context, subj interface{}, reason strin
 	defer func() { m.InvalidCallCount++ }()
 	m.InvalidArgSub = append(m.InvalidArgSub, subj)
 	m.InvalidArgReason = append(m.InvalidArgReason, reason)
+}
+
+// Query x
+func (m *MockLogger) Query(ctx context.Context, qry string, args ...interface{}) {
+	defer func() { m.QueryCallCount++ }()
+	m.QueryArgQry = append(m.QueryArgQry, qry)
+	m.QueryArgArgs = append(m.QueryArgArgs, args)
 }

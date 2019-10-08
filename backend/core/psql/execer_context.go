@@ -14,6 +14,6 @@ type execContextLogger struct {
 }
 
 func (ecl *execContextLogger) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
-	logQuery(ecl.logger, query, args)
+	ecl.logger.Query(ctx, query, args)
 	return ecl.execerContext.ExecContext(ctx, query, args)
 }

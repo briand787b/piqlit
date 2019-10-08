@@ -1,24 +1,16 @@
 package test
 
 import (
-	"flag"
 	"log"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/briand787b/piqlit/core/plog"
 )
 
-var live = flag.Bool("live", false, "use live dependencies - pkg dependent")
-
-func TestMain(m *testing.M) {
-	flag.Parse()
-	os.Exit(m.Run())
-}
-
-func SkipNotLive(t *testing.T) {
-	if !*live {
+// SkipLong skips long or expensive tests when the -test.short flag is passed
+func SkipLong(t *testing.T) {
+	if testing.Short() {
 		t.Skip()
 	}
 }

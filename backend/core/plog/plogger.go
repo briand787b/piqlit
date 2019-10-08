@@ -52,6 +52,11 @@ func (l *PLogger) Invalid(ctx context.Context, subj interface{}, reason string) 
 	)
 }
 
+// Query writes QUERY-lvl logs
+func (l *PLogger) Query(ctx context.Context, msg string, args ...interface{}) {
+	l.write(ctx, "QUERY ", msg, args...)
+}
+
 // Warn writes WARN-lvl logs
 func (l *PLogger) Warn(ctx context.Context, msg string, args ...interface{}) {
 	l.write(ctx, "WARNING ", msg, args...)
