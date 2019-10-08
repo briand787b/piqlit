@@ -1,5 +1,7 @@
 package plog
 
+import "context"
+
 // LogWriter writes to the concrete type that
 type LogWriter interface {
 	Println(v ...interface{})
@@ -8,9 +10,9 @@ type LogWriter interface {
 // Logger represents anything that can format logs correctly
 type Logger interface {
 	// generic logging
-	Error(msg string, args ...interface{})
-	Info(msg string, args ...interface{})
+	Error(ctx context.Context, msg string, args ...interface{})
+	Info(ctx context.Context, msg string, args ...interface{})
 
 	// specific event logging
-	Invalid(subj interface{}, reason string)
+	Invalid(ctx context.Context, subj interface{}, reason string)
 }

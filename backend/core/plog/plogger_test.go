@@ -14,7 +14,7 @@ import (
 )
 
 func TestPLoggerError(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 	tests := []struct {
 		name              string
 		spanID            *string
@@ -163,7 +163,7 @@ func TestPLoggerError(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			// t.Parallel()
+			t.Parallel()
 			ctx := context.Background()
 			if tt.spanID != nil {
 				ctx = plog.StoreSpanID(ctx, *tt.spanID)

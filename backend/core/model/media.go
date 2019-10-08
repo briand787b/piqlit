@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"time"
 
 	"github.com/briand787b/piqlit/core/obj"
@@ -26,9 +27,9 @@ type Media struct {
 
 // Validate returns an error if the Media is not properly
 // configured for persistent storage
-func (m *Media) Validate(l plog.Logger) error {
+func (m *Media) Validate(ctx context.Context, l plog.Logger) error {
 	if m.Name == "" {
-		l.Info("Media failed validation", "reason", "empty name")
+		l.Invalid(ctx, *m, "empty field: name")
 		return perr.NewErrInvalid("Media.Name cannot be empty")
 	}
 
