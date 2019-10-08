@@ -4,6 +4,9 @@ package obj
 type Encoding string
 
 const (
+	// Empty is the lack of an encoding
+	Empty Encoding = ""
+
 	// GIF is ...
 	GIF Encoding = "gif"
 )

@@ -8,6 +8,7 @@ import (
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/obj"
 	"github.com/briand787b/piqlit/core/perr"
+	"github.com/briand787b/piqlit/core/plog/plogtest"
 	"github.com/briand787b/piqlit/core/postgres"
 	"github.com/briand787b/piqlit/core/postgres/postgrestest"
 	"github.com/briand787b/piqlit/core/test"
@@ -220,6 +221,51 @@ func TestMediaParentChildAssociateDisassociateByID(t *testing.T) {
 
 			if len(retCMs) != 0 {
 				t.Fatalf("expected returned child media to equal 0, returned %v", len(retCMs))
+			}
+		})
+	}
+}
+
+func TestEncodings(t *testing.T) {
+	test.SkipLong(t)
+	tests := []struct {
+		name        string
+		encodingStr string
+		expEncoding obj.Encoding
+	}{
+		{"gif_encoding", "gif", obj.GIF},
+		{"empty_encoding", "", obj.Empty},
+		{"unknown_encoding", "unknown", obj.Encoding("unknown")},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := postgrestest.NewPGHelper(t)
+			m := model.Media{
+				Name:         t.Name(),
+				Encoding:     obj.Encoding(tt.encodingStr),
+				UploadStatus: obj.UploadInProgress,
+				CreatedAt:    h.Tm,
+				UpdatedAt:    h.Tm,
+			}
+
+			h.CreateMedia(&m, 0)
+			defer h.Clean()
+
+			retM, err := postgres.NewMediaPGStore(h.L, h.DB).GetByID(
+				plogtest.SpannedTracedCtx(),
+				m.ID,
+			)
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if retM.Encoding != tt.expEncoding {
+				t.Fatalf("expected encoding to be %v, was %v",
+					retM.Encoding,
+					tt.expEncoding,
+				)
 			}
 		})
 	}
