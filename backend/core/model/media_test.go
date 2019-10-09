@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/briand787b/piqlit/core/model"
+	"github.com/briand787b/piqlit/core/obj"
 	"github.com/briand787b/piqlit/core/perr"
 	"github.com/briand787b/piqlit/core/plog/plogtest"
 
@@ -22,16 +23,43 @@ func TestMediaValidate(t *testing.T) {
 		{
 			"media_with_full_fields_passes",
 			model.Media{
-				Name: "full_name",
+				Name:         "full_name",
+				Length:       1,
+				Encoding:     obj.GIF,
+				UploadStatus: obj.UploadDone,
 			},
 			nil,
 			"",
 		},
 		{
 			"media_with_empty_name_fails",
-			model.Media{},
+			model.Media{
+				Length:       1,
+				Encoding:     obj.GIF,
+				UploadStatus: obj.UploadDone,
+			},
 			perr.ErrInvalid,
 			"empty field: name",
+		},
+		{
+			"media_with_zero_length_fails",
+			model.Media{
+				Name:         "full_name",
+				Length:       0,
+				Encoding:     obj.GIF,
+				UploadStatus: obj.UploadDone},
+			perr.ErrInvalid,
+			"non-positive length",
+		},
+		{
+			"media_with_negative_length_fails",
+			model.Media{
+				Name:         "full_name",
+				Length:       -1,
+				Encoding:     obj.GIF,
+				UploadStatus: obj.UploadDone},
+			perr.ErrInvalid,
+			"non-positive length",
 		},
 	}
 

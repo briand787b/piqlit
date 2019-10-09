@@ -34,5 +34,10 @@ func (m *Media) Validate(ctx context.Context, l plog.Logger) error {
 		return perr.NewErrInvalid("Media.Name cannot be empty")
 	}
 
+	if m.Length < 1 {
+		l.Invalid(ctx, *m, "non-positive length")
+		return perr.NewErrInvalid("Media.Length must be positive integer")
+	}
+
 	return nil
 }
