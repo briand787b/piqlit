@@ -10,4 +10,5 @@ type MediaStore interface {
 	GetByID(ctx context.Context, id int) (*Media, error)
 	Insert(ctx context.Context, m *Media) error
 	SelectByParentID(ctx context.Context, pID int) ([]Media, error)
+	Update(ctx context.Context, m *Media) error
 }

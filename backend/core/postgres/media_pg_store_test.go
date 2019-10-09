@@ -270,3 +270,70 @@ func TestEncodings(t *testing.T) {
 		})
 	}
 }
+
+func TestMediaPGStoreUpdate(t *testing.T) {
+	test.SkipLong(t)
+	now := time.Now().UTC().Truncate(time.Second)
+	tests := []struct {
+		name     string
+		updMedia model.Media
+	}{
+		{
+			"empty_struct",
+			model.Media{
+				CreatedAt: now,
+				UpdatedAt: now,
+			},
+		},
+		{
+			"full_name",
+			model.Media{
+				Name:      "name",
+				CreatedAt: now,
+				UpdatedAt: now,
+			},
+		},
+		{
+			"full_encoding",
+			model.Media{
+				Encoding:  obj.GIF,
+				CreatedAt: now,
+				UpdatedAt: now,
+			},
+		},
+		{
+			"full_upload_status",
+			model.Media{
+				UploadStatus: obj.UploadDone,
+				CreatedAt:    now,
+				UpdatedAt:    now,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := postgrestest.NewPGHelper(t)
+			tt.updMedia.ID = h.CreateMedia(nil, 0).ID
+			defer h.Clean()
+
+			ctx := plogtest.SpannedTracedCtx()
+			mps := postgres.NewMediaPGStore(h.L, h.DB)
+
+			if err := mps.Update(ctx, &tt.updMedia); err != nil {
+				t.Fatal(err)
+			}
+
+			retM, err := mps.GetByID(ctx, tt.updMedia.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !cmp.Equal(tt.updMedia, *retM) {
+				t.Fatal("expected and retrieved media different: ",
+					cmp.Diff(tt.updMedia, *retM),
+				)
+			}
+		})
+	}
+}

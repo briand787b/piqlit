@@ -167,8 +167,8 @@ func (mps *MediaPGStore) Insert(ctx context.Context, m *model.Media) error {
 
 // SelectByParentID returns a slice of model.Media with the provided parentID
 func (mps *MediaPGStore) SelectByParentID(ctx context.Context, pID int) ([]model.Media, error) {
-	var m []model.Media
-	if err := sqlx.SelectContext(ctx, mps.db, &m, `
+	var ms []model.Media
+	if err := sqlx.SelectContext(ctx, mps.db, &ms, `
 		SELECT
 			m.id,
 			m.name,
@@ -185,5 +185,31 @@ func (mps *MediaPGStore) SelectByParentID(ctx context.Context, pID int) ([]model
 		return nil, errors.Wrap(err, "could not execute query")
 	}
 
-	return m, nil
+	return ms, nil
+}
+
+// Update updates a model.Media record
+func (mps *MediaPGStore) Update(ctx context.Context, m *model.Media) error {
+	qry, args, err := sqlx.Named(`
+		UPDATE media
+		SET
+			name = :name,
+			encoding = :encoding,
+			upload_status = :upload_status,
+			updated_at = :updated_at
+		WHERE
+			id = :id
+		RETURNING id;`, *m)
+	if err != nil {
+		return errors.Wrap(err, "could not bind Tag to query")
+	}
+
+	qry = sqlx.Rebind(sqlx.DOLLAR, qry)
+
+	var updateID int
+	if err := sqlx.GetContext(ctx, mps.db, &updateID, qry, args...); err != nil {
+		return errors.Wrap(err, "could not execute query")
+	}
+
+	return nil
 }
