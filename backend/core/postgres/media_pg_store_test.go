@@ -2,6 +2,7 @@ package postgres_test
 
 import (
 	"context"
+	"math"
 	"testing"
 	"time"
 
@@ -34,6 +35,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			nil,
 			model.Media{
 				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_single_successful_0",
+				Length:       1,
 				Encoding:     obj.GIF,
 				UploadStatus: obj.UploadInProgress,
 			},
@@ -45,6 +47,7 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 			nil,
 			model.Media{
 				Name:         "TestMediaPGStoreGetByID/finding_valid_id_in_multi_successful_2",
+				Length:       1,
 				Encoding:     obj.GIF,
 				UploadStatus: obj.UploadInProgress,
 			},
@@ -114,6 +117,7 @@ func TestMediaPGStoreInsertDelete(t *testing.T) {
 			model.Media{
 				Name:         "mango",
 				Encoding:     obj.GIF,
+				Length:       1,
 				UploadStatus: obj.UploadInProgress,
 				CreatedAt:    time.Now().UTC().Truncate(time.Second),
 				UpdatedAt:    time.Now().UTC().Truncate(time.Second),
@@ -243,6 +247,7 @@ func TestEncodings(t *testing.T) {
 			h := postgrestest.NewPGHelper(t)
 			m := model.Media{
 				Name:         t.Name(),
+				Length:       1,
 				Encoding:     obj.Encoding(tt.encodingStr),
 				UploadStatus: obj.UploadInProgress,
 				CreatedAt:    h.Tm,
@@ -307,6 +312,14 @@ func TestMediaPGStoreUpdate(t *testing.T) {
 				UploadStatus: obj.UploadDone,
 				CreatedAt:    now,
 				UpdatedAt:    now,
+			},
+		},
+		{
+			"full_length",
+			model.Media{
+				Length:    math.MaxInt64,
+				CreatedAt: now,
+				UpdatedAt: now,
 			},
 		},
 	}

@@ -110,6 +110,7 @@ func (mps *MediaPGStore) GetByID(ctx context.Context, id int) (*model.Media, err
 	SELECT
 		id,
 		name,
+		length,
 		encoding,
 		upload_status,
 		created_at,
@@ -134,6 +135,7 @@ func (mps *MediaPGStore) Insert(ctx context.Context, m *model.Media) error {
 		INSERT INTO	media
 		(
 			name,
+			length,
 			encoding,
 			upload_status,
 			created_at,
@@ -142,6 +144,7 @@ func (mps *MediaPGStore) Insert(ctx context.Context, m *model.Media) error {
 		VALUES
 		(
 			:name,
+			:length,
 			:encoding,
 			:upload_status,
 			:created_at,
@@ -172,6 +175,7 @@ func (mps *MediaPGStore) SelectByParentID(ctx context.Context, pID int) ([]model
 		SELECT
 			m.id,
 			m.name,
+			m.length,
 			m.encoding,
 			m.upload_status,
 			m.created_at,
@@ -194,6 +198,7 @@ func (mps *MediaPGStore) Update(ctx context.Context, m *model.Media) error {
 		UPDATE media
 		SET
 			name = :name,
+			length = :length,
 			encoding = :encoding,
 			upload_status = :upload_status,
 			updated_at = :updated_at

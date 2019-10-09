@@ -13,6 +13,7 @@ import (
 type Media struct {
 	ID           int              `db:"id"`
 	Name         string           `db:"name"`
+	Length       int64            `db:"length"`
 	Encoding     obj.Encoding     `db:"encoding"`
 	UploadStatus obj.UploadStatus `db:"upload_status"`
 	Children     []Media          `db:"children"`

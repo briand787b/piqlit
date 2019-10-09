@@ -14,6 +14,7 @@ func (h *PGHelper) CreateMedia(m *model.Media, index int) *model.Media {
 	if m == nil {
 		m = &model.Media{
 			Name:         fmt.Sprintf("%s_%v", h.T.Name(), index),
+			Length:       1,
 			Encoding:     obj.GIF,
 			UploadStatus: obj.UploadInProgress,
 			CreatedAt:    h.Tm,
