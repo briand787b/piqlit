@@ -2,14 +2,16 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: docker/compose:1.25.0-rc2
+      - image: circleci/golang:1.13-buster
     steps:
       - checkout
       - run:
-          name: The First Step
-          command: |
-            echo 'Hello World!'
-            echo 'This is the delivery pipeline'
+        name: Install Docker Compose
+        command: |
+          curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+          chmod +x ~/docker-compose
+          sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - setup_remote_docker
       - run:
           name: Code Has Arrived
           command: |
