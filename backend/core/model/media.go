@@ -60,14 +60,14 @@ func (m *Media) Persist(ctx context.Context, l plog.Logger, ms MediaStore) error
 // Validate returns an error if the Media is not properly
 // configured for persistent storage
 //
-// TODO: allow zero length media to exist as org units
+// zero length media may exist as org units
 func (m *Media) Validate(ctx context.Context, l plog.Logger) error {
 	if m.Name == "" {
 		l.Invalid(ctx, *m, "empty field: name")
 		return perr.NewErrInvalid("Media.Name cannot be empty")
 	}
 
-	if m.Length < 1 {
+	if m.Length < 0 {
 		l.Invalid(ctx, *m, "non-positive length")
 		return perr.NewErrInvalid("Media.Length must be positive integer")
 	}

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/briand787b/piqlit/core/model"
-	"github.com/briand787b/piqlit/core/model/modeltest"
 	"github.com/briand787b/piqlit/core/obj"
 	"github.com/briand787b/piqlit/core/perr"
 	"github.com/briand787b/piqlit/core/plog/plogtest"
@@ -43,14 +42,14 @@ func TestMediaValidate(t *testing.T) {
 			"empty field: name",
 		},
 		{
-			"media_with_zero_length_fails",
+			"media_with_zero_length_passes",
 			model.Media{
 				Name:         "full_name",
 				Length:       0,
 				Encoding:     obj.GIF,
 				UploadStatus: obj.UploadDone},
-			perr.ErrInvalid,
-			"non-positive length",
+			nil,
+			"",
 		},
 		{
 			"media_with_negative_length_fails",
@@ -103,29 +102,29 @@ func TestMediaValidate(t *testing.T) {
 	}
 }
 
-func TestMediaPersist(t *testing.T) {
-	tests := []struct {
-		name              string
-		m                 model.Media
-		msUpdateErr       []error
-		msInsertErr       []error
-		msAssociateErr    []error
-		msUpdateExpMedia  []*model.Media
-		msInsertExpMedia  []*model.Media
-		msAssociateExpPID []int
-		msAssociateExpCID [][]int
-		expErrToBeNil     bool
-	}{
-		{},
-	}
+// func TestMediaPersist(t *testing.T) {
+// 	tests := []struct {
+// 		name              string
+// 		m                 model.Media
+// 		msUpdateErr       []error
+// 		msInsertErr       []error
+// 		msAssociateErr    []error
+// 		msUpdateExpMedia  []*model.Media
+// 		msInsertExpMedia  []*model.Media
+// 		msAssociateExpPID []int
+// 		msAssociateExpCID [][]int
+// 		expErrToBeNil     bool
+// 	}{
+// 		{},
+// 	}
 
-	for _, tt := range tests {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			ctx := plogtest.SpannedTracedCtx()
-			ml := plogtest.MockLogger{}
+// 	for _, tt := range tests {
+// 		tt := tt
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			ctx := plogtest.SpannedTracedCtx()
+// 			ml := plogtest.MockLogger{}
 
-			ms := modeltest.MediaMockStore{}
-		})
-	}
-}
+// 			ms := modeltest.MediaMockStore{}
+// 		})
+// 	}
+// }
