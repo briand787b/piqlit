@@ -17,4 +17,4 @@ jobs:
             echo '^^^That should look familiar^^^'
       - run:
           name: Docker-Compse build
-          command: docker-compose build
+          command: echo docker -v
