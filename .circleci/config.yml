@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: docker:19.03.3
+      - image: docker/compose
     steps:
       - checkout
       - run:
@@ -17,4 +17,4 @@ jobs:
             echo '^^^That should look familiar^^^'
       - run:
           name: Docker-Compse build
-          command: echo $(docker -v)
+          command: docker-compose build
