@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/briand787b/piqlit/core/model"
+	"github.com/briand787b/piqlit/core/model/modeltest"
 	"github.com/briand787b/piqlit/core/obj"
 	"github.com/briand787b/piqlit/core/perr"
 	"github.com/briand787b/piqlit/core/plog/plogtest"
@@ -98,6 +99,33 @@ func TestMediaValidate(t *testing.T) {
 					tt.expReason, ml.InvalidArgReason[0],
 				)
 			}
+		})
+	}
+}
+
+func TestMediaPersist(t *testing.T) {
+	tests := []struct {
+		name              string
+		m                 model.Media
+		msUpdateErr       []error
+		msInsertErr       []error
+		msAssociateErr    []error
+		msUpdateExpMedia  []*model.Media
+		msInsertExpMedia  []*model.Media
+		msAssociateExpPID []int
+		msAssociateExpCID [][]int
+		expErrToBeNil     bool
+	}{
+		{},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := plogtest.SpannedTracedCtx()
+			ml := plogtest.MockLogger{}
+
+			ms := modeltest.MediaMockStore{}
 		})
 	}
 }
