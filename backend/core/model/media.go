@@ -24,6 +24,8 @@ type Media struct {
 }
 
 // Persist saves a Media to persistent storage
+//
+// TODO: figure out rollback strategy
 func (m *Media) Persist(ctx context.Context, l plog.Logger, ms MediaStore) error {
 	if err := m.Validate(ctx, l); err != nil {
 		return errors.Wrap(err, "could not validate Media")
@@ -57,6 +59,8 @@ func (m *Media) Persist(ctx context.Context, l plog.Logger, ms MediaStore) error
 
 // Validate returns an error if the Media is not properly
 // configured for persistent storage
+//
+// TODO: allow zero length media to exist as org units
 func (m *Media) Validate(ctx context.Context, l plog.Logger) error {
 	if m.Name == "" {
 		l.Invalid(ctx, *m, "empty field: name")
@@ -71,13 +75,15 @@ func (m *Media) Validate(ctx context.Context, l plog.Logger) error {
 	return nil
 }
 
-func (m *Media) update(ctx context.Context, l plog.Logger, ms MediaStore) error {
-	m.UpdatedAt = time.Now()
-	return ms.Update(ctx, m)
-}
-
+// TODO: search by name and error out if exists
 func (m *Media) insert(ctx context.Context, l plog.Logger, ms MediaStore) error {
 	now := time.Now()
 	m.CreatedAt, m.UpdatedAt = now, now
 	return ms.Insert(ctx, m)
+}
+
+// TODO: search by name and error out if exists w/ diff id
+func (m *Media) update(ctx context.Context, l plog.Logger, ms MediaStore) error {
+	m.UpdatedAt = time.Now()
+	return ms.Update(ctx, m)
 }
