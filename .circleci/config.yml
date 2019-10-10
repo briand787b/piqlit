@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: docker/compose
+      - image: docker/compose:1.25.0-rc2
     steps:
       - checkout
       - run:
