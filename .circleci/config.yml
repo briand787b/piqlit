@@ -16,5 +16,8 @@ jobs:
             ls -al
             echo '^^^That should look familiar^^^'
       - run:
+          name: Docker-Compse version
+          command: docker-compose -v
+      - run:
           name: Docker-Compse build
           command: docker-compose build
