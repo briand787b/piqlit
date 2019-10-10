@@ -1,3 +1,4 @@
+DROP INDEX IF EXISTS media_name;
 DROP INDEX IF EXISTS parent_child_media_index;
 DROP TABLE IF EXISTS parent_child_media;
 DROP TABLE IF EXISTS media;
