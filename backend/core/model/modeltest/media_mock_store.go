@@ -31,6 +31,11 @@ type MediaMockStore struct {
 	InsertArgMedia  []*model.Media
 	InsertReturnErr []error
 
+	SelectByNameCallCount   int
+	SelectByNameArgName     []string
+	SelectByNameReturnMedia [][]model.Media
+	SelectByNameReturnErr   []error
+
 	SelectByParentIDCallCount   int
 	SelectByParentIDArgPID      []int
 	SelectByParentIDReturnMedia [][]model.Media
@@ -77,6 +82,14 @@ func (s *MediaMockStore) Insert(ctx context.Context, m *model.Media) error {
 	defer func() { s.InsertCallCount++ }()
 	s.InsertArgMedia = append(s.InsertArgMedia, m)
 	return s.InsertReturnErr[s.InsertCallCount]
+}
+
+// SelectByName x
+func (s *MediaMockStore) SelectByName(ctx context.Context, name string) ([]model.Media, error) {
+	defer func() { s.SelectByNameCallCount++ }()
+	s.SelectByNameArgName = append(s.SelectByNameArgName, name)
+	return s.SelectByNameReturnMedia[s.SelectByNameCallCount],
+		s.SelectByNameReturnErr[s.SelectByNameCallCount]
 }
 
 // SelectByParentID x
