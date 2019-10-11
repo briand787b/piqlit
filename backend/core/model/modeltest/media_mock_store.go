@@ -31,10 +31,10 @@ type MediaMockStore struct {
 	InsertArgMedia  []*model.Media
 	InsertReturnErr []error
 
-	SelectByNameCallCount   int
-	SelectByNameArgName     []string
-	SelectByNameReturnMedia [][]model.Media
-	SelectByNameReturnErr   []error
+	GetByNameCallCount   int
+	GetByNameArgName     []string
+	GetByNameReturnMedia []*model.Media
+	GetByNameReturnErr   []error
 
 	SelectByParentIDCallCount   int
 	SelectByParentIDArgPID      []int
@@ -77,19 +77,19 @@ func (s *MediaMockStore) GetByID(ctx context.Context, id int) (*model.Media, err
 		s.GetByIDReturnErr[s.GetByIDCallCount]
 }
 
+// GetByName x
+func (s *MediaMockStore) GetByName(ctx context.Context, name string) (*model.Media, error) {
+	defer func() { s.GetByNameCallCount++ }()
+	s.GetByNameArgName = append(s.GetByNameArgName, name)
+	return s.GetByNameReturnMedia[s.GetByNameCallCount],
+		s.GetByNameReturnErr[s.GetByNameCallCount]
+}
+
 // Insert x
 func (s *MediaMockStore) Insert(ctx context.Context, m *model.Media) error {
 	defer func() { s.InsertCallCount++ }()
 	s.InsertArgMedia = append(s.InsertArgMedia, m)
 	return s.InsertReturnErr[s.InsertCallCount]
-}
-
-// SelectByName x
-func (s *MediaMockStore) SelectByName(ctx context.Context, name string) ([]model.Media, error) {
-	defer func() { s.SelectByNameCallCount++ }()
-	s.SelectByNameArgName = append(s.SelectByNameArgName, name)
-	return s.SelectByNameReturnMedia[s.SelectByNameCallCount],
-		s.SelectByNameReturnErr[s.SelectByNameCallCount]
 }
 
 // SelectByParentID x

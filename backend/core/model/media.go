@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/briand787b/piqlit/core/obj"
@@ -50,8 +51,10 @@ func (m *Media) Persist(ctx context.Context, l plog.Logger, ms MediaStore) error
 		cIDs = append(cIDs, c.ID)
 	}
 
-	if err := ms.AssociateParentIDWithChildIDs(ctx, m.ID, cIDs...); err != nil {
-		return errors.Wrap(err, "could not associate parent media with children")
+	if m.Children != nil && len(m.Children) > 0 {
+		if err := ms.AssociateParentIDWithChildIDs(ctx, m.ID, cIDs...); err != nil {
+			return errors.Wrap(err, "could not associate parent media with children")
+		}
 	}
 
 	return nil
@@ -75,15 +78,27 @@ func (m *Media) Validate(ctx context.Context, l plog.Logger) error {
 	return nil
 }
 
-// TODO: search by name and error out if exists
+// do not insert media with existing names
 func (m *Media) insert(ctx context.Context, l plog.Logger, ms MediaStore) error {
-	now := time.Now()
+	if _, err := ms.GetByName(ctx, m.Name); err == nil {
+		return perr.NewErrInvalid(fmt.Sprintf("name '%s' already exists in database", m.Name))
+	}
+
+	now := time.Now().UTC().Truncate(time.Second)
 	m.CreatedAt, m.UpdatedAt = now, now
 	return ms.Insert(ctx, m)
 }
 
-// TODO: search by name and error out if exists w/ diff id
+// only update media with duplicate name if same ID
 func (m *Media) update(ctx context.Context, l plog.Logger, ms MediaStore) error {
-	m.UpdatedAt = time.Now()
+	mm, err := ms.GetByName(ctx, m.Name)
+	if err == nil && mm != nil {
+		if mm.ID != m.ID {
+			return perr.NewErrInvalid(fmt.Sprintf("name '%s' already exists in database", m.Name))
+		}
+
+	}
+
+	m.UpdatedAt = time.Now().UTC().Truncate(time.Second)
 	return ms.Update(ctx, m)
 }
