@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/briand787b/piqlit/core/obj"
@@ -22,6 +23,49 @@ type Media struct {
 	Children     []Media          `db:"children"`
 	CreatedAt    time.Time        `db:"created_at"`
 	UpdatedAt    time.Time        `db:"updated_at"`
+}
+
+// FindMediaByID returns the Media with provided id
+func FindMediaByID(ctx context.Context, ms MediaStore, id int) (*Media, error) {
+	if id == 0 {
+		return nil, perr.NewErrInvalid("cannot search for ID 0")
+	}
+
+	m, err := ms.GetByID(ctx, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not get Media by ID")
+	}
+
+	return m, nil
+}
+
+// Delete deletes the Media receiver from persistent storage
+func (m *Media) Delete(ctx context.Context, ms MediaStore) error {
+	if m.ID == 0 {
+		return perr.NewErrInvalid("cannot delete Media that is not persisted")
+	}
+
+	if err := ms.DeleteByID(ctx, m.ID); err != nil {
+		return errors.Wrap(err, "could not delete Media by ID")
+	}
+
+	return nil
+}
+
+// Download returns a closable stream of the Media's contents
+//
+// TODO: figure out how to key off the name for object storage
+func (m *Media) Download(ctx context.Context, os obj.ObjectStore) (io.ReadCloser, error) {
+	if m.UploadStatus != obj.UploadDone {
+		return nil, perr.NewErrNotFound(errors.New("requested Media has not completed uploading"))
+	}
+
+	rc, err := os.Get(ctx, m.Name)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not get object from storage")
+	}
+
+	return rc, nil
 }
 
 // Persist saves a Media to persistent storage
@@ -64,6 +108,20 @@ func (m *Media) Persist(ctx context.Context, l plog.Logger, ms MediaStore) error
 	return nil
 }
 
+// Upload uploads the provided contents to object storage
+func (m *Media) Upload(ctx context.Context, os obj.ObjectStore, content io.ReadCloser) error {
+	if m.Length < 1 {
+		// zero-length objects cannot be uploaded - unsure if this is an error or not though
+		return nil
+	}
+
+	if err := os.Put(ctx, m.Name, content); err != nil {
+		return errors.Wrap(err, "could not store object")
+	}
+
+	return nil
+}
+
 // Validate returns an error if the Media is not properly
 // configured for persistent storage
 //
@@ -83,6 +141,8 @@ func (m *Media) Validate(ctx context.Context, l plog.Logger) error {
 }
 
 // do not insert media with existing names
+//
+// TODO: set upload_status to `not_started` before insertion
 func (m *Media) insert(ctx context.Context, l plog.Logger, ms MediaStore) error {
 	if _, err := ms.GetByName(ctx, m.Name); err == nil {
 		return perr.NewErrInvalid(fmt.Sprintf("name '%s' already exists in database", m.Name))
