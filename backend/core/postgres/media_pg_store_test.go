@@ -19,6 +19,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+var _ model.MediaStore = &postgres.MediaPGStore{}
+
 func TestMediaPGStoreGetByID(t *testing.T) {
 	test.SkipLong(t)
 	tests := []struct {
@@ -201,7 +203,7 @@ func TestMediaParentChildAssociateDisassociateByID(t *testing.T) {
 				t.Fatal("failed to prove parent-child media association: ", err)
 			}
 
-			defer mps.DisassociateParentIDFromChildIDs(ctx, pm.ID, cmIDs...)
+			defer mps.DisassociateParentIDFromChildren(ctx, pm.ID)
 
 			retCMs, err := mps.SelectByParentID(ctx, pm.ID)
 			if err != nil {
@@ -214,7 +216,7 @@ func TestMediaParentChildAssociateDisassociateByID(t *testing.T) {
 				)
 			}
 
-			if err := mps.DisassociateParentIDFromChildIDs(ctx, pm.ID, cmIDs...); err != nil {
+			if err := mps.DisassociateParentIDFromChildren(ctx, pm.ID); err != nil {
 				t.Fatal("could not disassociate parent media from children: ", err)
 			}
 

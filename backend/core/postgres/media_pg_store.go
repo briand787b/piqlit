@@ -74,29 +74,16 @@ func (mps *MediaPGStore) DeleteByID(ctx context.Context, id int) error {
 	return nil
 }
 
-// DisassociateParentIDFromChildIDs deletes records from the parent_child_media table where the parent_id
-// equals pID and the cID is in the set of cIDs
-func (mps *MediaPGStore) DisassociateParentIDFromChildIDs(ctx context.Context, pID int, cIDs ...int) error {
-	if cIDs == nil || len(cIDs) < 1 {
-		return nil
-	}
-
-	qry, args, err := sqlx.In(`
-		DELETE FROM parent_child_media 
-		WHERE 
-			parent_id = ?
-			AND child_id IN (?)
+// DisassociateParentIDFromChildren deletes records from the parent_child_media table where the parent_id
+// equals pID
+func (mps *MediaPGStore) DisassociateParentIDFromChildren(ctx context.Context, pID int) error {
+	var CIDs []int64
+	if err := sqlx.SelectContext(ctx, mps.db, &CIDs, `
+		DELETE FROM parent_child_media
+		WHERE parent_id = $1
 		RETURNING child_id;`,
-		pID, cIDs,
-	)
-	if err != nil {
-		return errors.Wrap(err, "could not format `IN` query")
-	}
-
-	qry = mps.db.Rebind(qry)
-
-	var deletedChildIDs []int
-	if err := sqlx.SelectContext(ctx, mps.db, &deletedChildIDs, qry, args...); err != nil {
+		pID,
+	); err != nil {
 		return errors.Wrap(err, "could not execute query")
 	}
 
@@ -124,6 +111,32 @@ func (mps *MediaPGStore) GetByID(ctx context.Context, id int) (*model.Media, err
 		}
 
 		return nil, perr.NewErrInternal(err)
+	}
+
+	return &m, nil
+}
+
+// GetByName retrieves a Media by its name
+func (mps *MediaPGStore) GetByName(ctx context.Context, name string) (*model.Media, error) {
+	var m model.Media
+	if err := sqlx.GetContext(ctx, mps.db, &m, `
+		SELECT
+			id,
+			name,
+			length,
+			encoding,
+			upload_status,
+			created_at,
+			updated_at
+		FROM media
+		WHERE name = $1;`,
+		name,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, perr.NewErrNotFound(err)
+		}
+
+		return nil, errors.Wrap(err, "could not execute query")
 	}
 
 	return &m, nil

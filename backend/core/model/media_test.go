@@ -105,6 +105,7 @@ func TestMediaValidate(t *testing.T) {
 }
 
 func TestMediaPersist(t *testing.T) {
+	t.Parallel()
 	now := time.Now().UTC().Truncate(time.Second)
 	tests := []struct {
 		name              string
@@ -280,6 +281,7 @@ func TestMediaPersist(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			ctx := plogtest.SpannedTracedCtx()
 			ml := plogtest.MockLogger{}
 
