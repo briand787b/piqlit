@@ -42,6 +42,10 @@ func (m *Media) Persist(ctx context.Context, l plog.Logger, ms MediaStore) error
 		}
 	}
 
+	if err := ms.DisassociateParentIDFromChildren(ctx, m.ID); err != nil {
+		return errors.Wrap(err, "could not disassociate parent Media from children")
+	}
+
 	var cIDs []int
 	for _, c := range m.Children {
 		if err := c.Persist(ctx, l, ms); err != nil {

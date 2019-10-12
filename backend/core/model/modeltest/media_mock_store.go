@@ -17,10 +17,9 @@ type MediaMockStore struct {
 	DeleteByIDArgID     []int
 	DeleteByIDReturnErr []error
 
-	DisassociateParentIDFromChildIDsCallCount int
-	DisassociateParentIDFromChildIDsArgPID    []int
-	DisassociateParentIDFromChildIDsArgCIDs   [][]int
-	DisassociateParentIDFromChildIDsReturnErr []error
+	DisassociateParentIDFromChildrenCallCount int
+	DisassociateParentIDFromChildrenArgPID    []int
+	DisassociateParentIDFromChildrenReturnErr []error
 
 	GetByIDCallCount   int
 	GetByIDArgID       []int
@@ -61,12 +60,11 @@ func (s *MediaMockStore) DeleteByID(ctx context.Context, id int) error {
 	return s.DeleteByIDReturnErr[s.DeleteByIDCallCount]
 }
 
-// DisassociateParentIDFromChildIDs x
-func (s *MediaMockStore) DisassociateParentIDFromChildIDs(ctx context.Context, pID int, cIDs ...int) error {
-	defer func() { s.DisassociateParentIDFromChildIDsCallCount++ }()
-	s.DisassociateParentIDFromChildIDsArgPID = append(s.DisassociateParentIDFromChildIDsArgPID, pID)
-	s.DisassociateParentIDFromChildIDsArgCIDs = append(s.DisassociateParentIDFromChildIDsArgCIDs, cIDs)
-	return s.DisassociateParentIDFromChildIDsReturnErr[s.DisassociateParentIDFromChildIDsCallCount]
+// DisassociateParentIDFromChildren x
+func (s *MediaMockStore) DisassociateParentIDFromChildren(ctx context.Context, pID int) error {
+	defer func() { s.DisassociateParentIDFromChildrenCallCount++ }()
+	s.DisassociateParentIDFromChildrenArgPID = append(s.DisassociateParentIDFromChildrenArgPID, pID)
+	return s.DisassociateParentIDFromChildrenReturnErr[s.DisassociateParentIDFromChildrenCallCount]
 }
 
 // GetByID x
