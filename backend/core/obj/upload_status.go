@@ -8,9 +8,12 @@ const (
 	// UploadDone is the status of a successfully completed upload
 	UploadDone UploadStatus = "done"
 
+	// UploadFailed is the status of an unsuccessfully completed upload
+	UploadFailed UploadStatus = "failed"
+
 	// UploadInProgress is the status of a successfully completed upload
 	UploadInProgress UploadStatus = "in_progress"
 
-	// UploadFailed is the status of an unsuccessfully completed upload
-	UploadFailed UploadStatus = "failed"
+	// UploadNotStarted is the status of an upload that has not yet begun
+	UploadNotStarted UploadStatus = "not_started"
 )

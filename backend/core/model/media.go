@@ -55,7 +55,7 @@ func (m *Media) Delete(ctx context.Context, ms MediaStore) error {
 // Download returns a closable stream of the Media's contents
 //
 // TODO: figure out how to key off the name for object storage
-func (m *Media) Download(ctx context.Context, os obj.ObjectStore) (io.ReadCloser, error) {
+func (m *Media) Download(ctx context.Context, l plog.Logger, os obj.ObjectStore) (io.ReadCloser, error) {
 	if m.UploadStatus != obj.UploadDone {
 		return nil, perr.NewErrNotFound(errors.New("requested Media has not completed uploading"))
 	}
@@ -109,14 +109,29 @@ func (m *Media) Persist(ctx context.Context, l plog.Logger, ms MediaStore) error
 }
 
 // Upload uploads the provided contents to object storage
-func (m *Media) Upload(ctx context.Context, os obj.ObjectStore, content io.ReadCloser) error {
+func (m *Media) Upload(ctx context.Context, l plog.Logger, os obj.ObjectStore, ms MediaStore, content io.ReadCloser) error {
 	if m.Length < 1 {
 		// zero-length objects cannot be uploaded - unsure if this is an error or not though
 		return nil
 	}
 
+	m.UploadStatus = obj.UploadInProgress
+	if err := ms.Update(ctx, m); err != nil {
+		return errors.Wrap(err, "could not update upload_status")
+	}
+
 	if err := os.Put(ctx, m.Name, content); err != nil {
+		m.UploadStatus = obj.UploadFailed
+		if err := ms.Update(ctx, m); err != nil {
+			l.Error(ctx, "could not update media fields", "UploadStatus", obj.UploadFailed)
+		}
+
 		return errors.Wrap(err, "could not store object")
+	}
+
+	m.UploadStatus = obj.UploadDone
+	if err := ms.Update(ctx, m); err != nil {
+		return errors.Wrap(err, "could not update upload_status")
 	}
 
 	return nil
@@ -150,6 +165,7 @@ func (m *Media) insert(ctx context.Context, l plog.Logger, ms MediaStore) error 
 
 	now := time.Now().UTC().Truncate(time.Second)
 	m.CreatedAt, m.UpdatedAt = now, now
+	m.UploadStatus = obj.UploadNotStarted
 	return ms.Insert(ctx, m)
 }
 
