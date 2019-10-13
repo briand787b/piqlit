@@ -2,11 +2,15 @@ package main
 
 import (
 	"flag"
+	"log"
+	"os"
 
 	"github.com/briand787b/piqlit/api/rest/controller"
 	"github.com/briand787b/piqlit/core/obj"
+	"github.com/briand787b/piqlit/core/plog"
+	"github.com/briand787b/piqlit/core/postgres"
 
-	"github.com/sirupsen/logrus"
+	"github.com/google/uuid"
 )
 
 var (
@@ -18,10 +22,9 @@ var (
 func main() {
 	flag.Parse()
 
-	l := logrus.New()
-	// l.Formatter = &logrus.JSONFormatter{}
+	l := plog.NewPLogger(log.New(os.Stdout, "", 0), uuid.New())
+	ms := postgres.NewMediaPGStore(l, postgres.GetExtFull(l))
+	os := obj.ObjectStore(nil)
 
-	os := obj.NewObjectFileStore(l, *dataDirFlag)
-
-	controller.Serve(*portFlag, l, os)
+	controller.Serve(*portFlag, l, ms, os)
 }
