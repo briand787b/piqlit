@@ -2,6 +2,7 @@ package perr
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -31,8 +32,11 @@ const (
 
 // GetExternalMsg extracts the message for the error that is suitable
 // for displaying externally
+//
+// TODO: make this function take the logger
 func GetExternalMsg(e error) string {
 	if e == nil {
+		log.Println("WARNING: nil error passed to 'GetExternalMsg'")
 		return ""
 	}
 
@@ -52,6 +56,7 @@ func GetExternalMsg(e error) string {
 // for internal logging
 func GetInternalMsg(e error) string {
 	if e == nil {
+		log.Println("WARNING: nil error passed to 'GetInternalMsg'")
 		return ""
 	}
 

@@ -23,7 +23,11 @@ func Serve(port int, l plog.Logger, ms model.MediaStore, os obj.ObjectStore) {
 	r.Use(middleware.Recoverer)
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
-	r.Get("/", mc.GetByID)
+	r.Route("/media", func(r chi.Router) {
+		r.Route("/{media_id}", func(r chi.Router) {
+			r.With(mc.mediaCtx).Get("/", mc.HandleGetMediaByID)
+		})
+	})
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), r))
 }

@@ -7,7 +7,9 @@ import (
 
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/obj"
+	"github.com/briand787b/piqlit/core/perr"
 	"github.com/briand787b/piqlit/core/plog"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/pkg/errors"
@@ -31,37 +33,39 @@ func NewMediaController(l plog.Logger, ms model.MediaStore, os obj.ObjectStore) 
 
 func (c *MediaController) mediaCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		mID := chi.URLParam(r, "media_id")
 		if mID == "" {
-			render.Render(w, r, ErrInternalServer(tc.l, errors.New("could not get tag_id url param")))
+			render.Render(w, r, newErrResponse(ctx, c.l, errors.New("no media_id in url params")))
 			return
 		}
 
 		mIDInt, err := strconv.Atoi(mID)
 		if err != nil {
-			render.Render(w, r, ErrInvalidRequest(tc.l, errors.Wrap(err, "could not convert string tag_id to int")))
+			render.Render(w, r, newErrResponse(ctx, c.l, perr.NewErrInvalid("could not convert string tag_id to int")))
 			return
 		}
 
 		m, err := model.FindMediaByID(r.Context(), c.ms, mIDInt)
 		if err != nil {
-			if validation.IsValidationError(err) {
-				render.Render(w, r, ErrNotFound(tc.l))
-				return
-			}
-
-			render.Render(w, r, ErrInternalServer(tc.l, err))
+			render.Render(w, r, newErrResponse(ctx, c.l, err))
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), mediaCtxKey, m)
+		ctx = context.WithValue(r.Context(), mediaCtxKey, m)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-// GetByID writes a MediaResponse on the connection
-func (c *MediaController) GetByID(w http.ResponseWriter, r *http.Request) {
+// HandleGetMediaByID writes a MediaResponse on the connection
+func (c *MediaController) HandleGetMediaByID(w http.ResponseWriter, r *http.Request) {
+	m, ok := r.Context().Value(mediaCtxKey).(*model.Media)
+	if !ok {
+		render.Render(w, r, newErrResponse(r.Context(), c.l, perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))))
+		return
+	}
 
+	render.Render(w, r, NewMediaResponse(m))
 }
 
 // // ListAllMedia lists all Media, bounded by the

@@ -1,7 +1,8 @@
-package controllers
+package controller
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/briand787b/piqlit/core/perr"
@@ -18,7 +19,8 @@ type ErrResponse struct {
 }
 
 func newErrResponse(ctx context.Context, l plog.Logger, err error) *ErrResponse {
-	l.Error(ctx, "error handling request", "error", err)
+	log.Println("error to newErrResponse: ", err)
+	l.Error(ctx, "error handling request", "error", err.Error())
 
 	er := ErrResponse{
 		StatusText: perr.GetExternalMsg(err),

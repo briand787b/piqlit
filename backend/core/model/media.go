@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"time"
 
 	"github.com/briand787b/piqlit/core/obj"
@@ -27,6 +28,7 @@ type Media struct {
 
 // FindMediaByID returns the Media with provided id
 func FindMediaByID(ctx context.Context, ms MediaStore, id int) (*Media, error) {
+	log.Println("STARTED FINDMEDIABYID")
 	if id == 0 {
 		return nil, perr.NewErrInvalid("cannot search for ID 0")
 	}
@@ -36,6 +38,7 @@ func FindMediaByID(ctx context.Context, ms MediaStore, id int) (*Media, error) {
 		return nil, errors.Wrap(err, "could not get Media by ID")
 	}
 
+	log.Println("FINISHED FINDMEDIABYID")
 	return m, nil
 }
 
