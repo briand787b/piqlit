@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -53,8 +54,9 @@ func (l *PLogger) Invalid(ctx context.Context, subj interface{}, reason string) 
 }
 
 // Query writes QUERY-lvl logs
-func (l *PLogger) Query(ctx context.Context, msg string, args ...interface{}) {
-	l.write(ctx, "QUERY ", msg, args...)
+func (l *PLogger) Query(ctx context.Context, qry string, args ...interface{}) {
+	qry = strings.NewReplacer("\t", " ", "\n", " ").Replace(qry)
+	l.write(ctx, "QUERY", "", "query_string", qry, "args", args)
 }
 
 // Warn writes WARN-lvl logs

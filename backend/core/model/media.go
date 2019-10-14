@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"time"
 
 	"github.com/briand787b/piqlit/core/obj"
@@ -16,19 +15,18 @@ import (
 
 // Media is a container for viewable works of art, or for child media
 type Media struct {
-	ID           int              `db:"id"`
-	Name         string           `db:"name"`
-	Length       int64            `db:"length"`
-	Encoding     obj.Encoding     `db:"encoding"`
-	UploadStatus obj.UploadStatus `db:"upload_status"`
-	Children     []Media          `db:"children"`
-	CreatedAt    time.Time        `db:"created_at"`
-	UpdatedAt    time.Time        `db:"updated_at"`
+	ID           int              `db:"id" json:"id"`
+	Name         string           `db:"name" json:"name"`
+	Length       int64            `db:"length" json:"length"`
+	Encoding     obj.Encoding     `db:"encoding" json:"encoding"`
+	UploadStatus obj.UploadStatus `db:"upload_status" json:"upload_status"`
+	Children     []Media          `db:"children" json:"children"`
+	CreatedAt    time.Time        `db:"created_at" json:"created_at"`
+	UpdatedAt    time.Time        `db:"updated_at" json:"updated_at"`
 }
 
 // FindMediaByID returns the Media with provided id
 func FindMediaByID(ctx context.Context, ms MediaStore, id int) (*Media, error) {
-	log.Println("STARTED FINDMEDIABYID")
 	if id == 0 {
 		return nil, perr.NewErrInvalid("cannot search for ID 0")
 	}
@@ -38,7 +36,6 @@ func FindMediaByID(ctx context.Context, ms MediaStore, id int) (*Media, error) {
 		return nil, errors.Wrap(err, "could not get Media by ID")
 	}
 
-	log.Println("FINISHED FINDMEDIABYID")
 	return m, nil
 }
 
