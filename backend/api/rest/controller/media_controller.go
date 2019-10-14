@@ -67,13 +67,19 @@ func (c *MediaController) HandleCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.Persist(ctx, c.l, c.ms); err != nil {
+	m := data.Media()
+	if err := m.Persist(ctx, c.l, c.ms); err != nil {
 		render.Render(w, r, newErrResponse(ctx, c.l, err))
 		return
 	}
 
+	mr, err := model.FindMediaByID(ctx, c.ms, m.ID)
+	if err != nil {
+		render.Render(w, r, newErrResponse(ctx, c.l, err))
+	}
+
 	render.Status(r, http.StatusCreated)
-	render.Render(w, r, NewMediaResponse(&data.Media))
+	render.Render(w, r, NewMediaResponse(mr))
 }
 
 // HandleGetMediaByID writes a MediaResponse on the connection

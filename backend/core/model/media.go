@@ -36,6 +36,12 @@ func FindMediaByID(ctx context.Context, ms MediaStore, id int) (*Media, error) {
 		return nil, errors.Wrap(err, "could not get Media by ID")
 	}
 
+	cs, err := ms.SelectByParentID(ctx, m.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not get children Media")
+	}
+
+	m.Children = cs
 	return m, nil
 }
 
