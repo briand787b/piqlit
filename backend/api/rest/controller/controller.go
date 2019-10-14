@@ -24,6 +24,8 @@ func Serve(port int, l plog.Logger, ms model.MediaStore, os obj.ObjectStore) {
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	r.Route("/media", func(r chi.Router) {
+		r.Post("/", mc.HandleCreate)
+
 		r.Route("/{media_id}", func(r chi.Router) {
 			r.With(mc.mediaCtx).Get("/", mc.HandleGetMediaByID)
 		})

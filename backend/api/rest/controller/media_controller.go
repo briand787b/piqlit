@@ -57,6 +57,25 @@ func (c *MediaController) mediaCtx(next http.Handler) http.Handler {
 	})
 }
 
+// HandleCreate Handles Media creation
+func (c *MediaController) HandleCreate(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var data MediaRequest
+	if err := render.Bind(r, &data); err != nil {
+		render.Render(w, r, newErrResponse(ctx, c.l, perr.NewErrInvalid("could not bind request body to Media")))
+		return
+	}
+
+	if err := data.Persist(ctx, c.l, c.ms); err != nil {
+		render.Render(w, r, newErrResponse(ctx, c.l, err))
+		return
+	}
+
+	render.Status(r, http.StatusCreated)
+	render.Render(w, r, NewMediaResponse(&data.Media))
+}
+
 // HandleGetMediaByID writes a MediaResponse on the connection
 func (c *MediaController) HandleGetMediaByID(w http.ResponseWriter, r *http.Request) {
 	m, ok := r.Context().Value(mediaCtxKey).(*model.Media)
