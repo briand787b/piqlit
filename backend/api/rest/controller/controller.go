@@ -30,6 +30,7 @@ func Serve(port int, l plog.Logger, ms model.MediaStore, os obj.ObjectStore) {
 		r.Post("/", mc.HandleCreate)
 
 		r.Route("/{media_id}", func(r chi.Router) {
+			r.With(mc.mediaCtx).Delete("/", mc.HandleDelete)
 			r.With(mc.mediaCtx).Get("/", mc.HandleGetByID)
 			r.With(mc.mediaCtx).Put("/", mc.HandleUpdate)
 		})

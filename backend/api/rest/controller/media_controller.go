@@ -83,6 +83,22 @@ func (c *MediaController) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	render.Render(w, r, NewMediaResponse(mr))
 }
 
+// HandleDelete deletes the provided resource
+func (c *MediaController) HandleDelete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	m, ok := ctx.Value(mediaCtxKey).(*model.Media)
+	if !ok {
+		render.Render(w, r, newErrResponse(r.Context(), c.l, perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))))
+		return
+	}
+
+	if err := m.Delete(ctx, c.ms); err != nil {
+		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not delete resource")))
+	}
+
+	render.Status(r, http.StatusOK)
+}
+
 // HandleGetByID writes a MediaResponse on the connection
 func (c *MediaController) HandleGetByID(w http.ResponseWriter, r *http.Request) {
 	m, ok := r.Context().Value(mediaCtxKey).(*model.Media)
