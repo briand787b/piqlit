@@ -187,14 +187,21 @@ func (m *Media) insert(ctx context.Context, l plog.Logger, ms MediaStore) error 
 
 // only update media with duplicate name if same ID
 func (m *Media) update(ctx context.Context, l plog.Logger, ms MediaStore) error {
-	mm, err := ms.GetByName(ctx, m.Name)
-	if err == nil && mm != nil {
-		if mm.ID != m.ID {
-			return perr.NewErrInvalid(fmt.Sprintf("name '%s' already exists in database", m.Name))
-		}
-
+	mm, err := ms.GetByID(ctx, m.ID)
+	if err != nil {
+		return perr.NewErrNotFound(errors.Wrap(err, "could not find "))
 	}
 
+	l.Info(ctx, "Media to update", "pre-update value", mm)
+
+	if mm.Name != m.Name {
+		if _, err = ms.GetByName(ctx, m.Name); err == nil {
+			return perr.NewErrInvalid(fmt.Sprintf("name '%s' already exists in database", m.Name))
+		}
+	}
+
+	m.UploadStatus = mm.UploadStatus
+	m.CreatedAt = mm.CreatedAt
 	m.UpdatedAt = time.Now().UTC().Truncate(time.Second)
 	return ms.Update(ctx, m)
 }
