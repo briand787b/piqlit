@@ -84,20 +84,21 @@ func (m *Media) Download(ctx context.Context, l plog.Logger, os obj.ObjectStore)
 
 // Persist x
 func (m *Media) Persist(ctx context.Context, l plog.Logger, mts MediaTxCtlStore) error {
-	txCtl, err := mts.Begin(ctx)
+	var err error
+	mts, err = mts.Begin(ctx)
 	if err != nil {
 		return errors.Wrap(err, "could not begin tx")
 	}
 
 	if err := m.persist(ctx, l, mts); err != nil {
-		if err := txCtl.Rollback(ctx); err != nil {
+		if err := mts.Rollback(ctx); err != nil {
 			l.Error(ctx, "could not roll back tx for Persist", "media", m, "error", err)
 		}
 
 		return errors.Wrap(err, "could not persist Media")
 	}
 
-	if err := txCtl.Commit(ctx); err != nil {
+	if err := mts.Commit(ctx); err != nil {
 		l.Error(ctx, "could not commit tx", "error", err)
 	}
 
