@@ -97,5 +97,5 @@ func GetDB() *sqlx.DB {
 // GetExtFull returns a Postgres-backed sqlx.DB,
 // wrapped in a psql.ExtFull interface
 func GetExtFull(l plog.Logger) psql.ExtFull {
-	return psql.GetExtFull(l, GetDB())
+	return psql.NewExtFull(l, GetDB())
 }

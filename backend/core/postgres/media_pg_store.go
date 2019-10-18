@@ -25,6 +25,26 @@ func NewMediaPGStore(l plog.Logger, db psql.ExtFull) *MediaPGStore {
 	return &MediaPGStore{l: l, db: db}
 }
 
+// Begin x
+func (mps *MediaPGStore) Begin(ctx context.Context) (model.MediaTxCtlStore, error) {
+	tx, err := mps.db.Begin(ctx, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not begin txx")
+	}
+
+	return NewMediaPGStore(mps.l, psql.NewExtFullFromTx(mps.l, tx)), nil
+}
+
+// Commit x
+func (mps *MediaPGStore) Commit(ctx context.Context) error {
+	return mps.db.Commit(ctx)
+}
+
+// Rollback x
+func (mps *MediaPGStore) Rollback(ctx context.Context) error {
+	return mps.db.Rollback(ctx)
+}
+
 // AssociateParentIDWithChildIDs inserts a row into the parent_child_media table
 func (mps *MediaPGStore) AssociateParentIDWithChildIDs(ctx context.Context, pID int, cIDs ...int) error {
 	if cIDs == nil || len(cIDs) < 1 {

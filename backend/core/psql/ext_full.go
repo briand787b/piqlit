@@ -2,6 +2,7 @@ package psql
 
 import (
 	"github.com/briand787b/piqlit/core/plog"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -14,17 +15,19 @@ type ExtFull interface {
 	sqlx.ExecerContext
 	sqlx.Queryer
 	sqlx.QueryerContext
+	txFull
 }
 
-// GetExtFull returns an implementation of ExtFull backed by
+// NewExtFull returns an implementation of ExtFull backed by
 // whatever database underlies the db variable provided to it.
-func GetExtFull(l plog.Logger, db *sqlx.DB) ExtFull {
+func NewExtFull(l plog.Logger, db *sqlx.DB) ExtFull {
 	return struct {
 		binder
 		sqlx.Execer
 		sqlx.ExecerContext
 		sqlx.Queryer
 		sqlx.QueryerContext
+		txFull
 	}{
 		db,
 		&execLogger{
@@ -42,6 +45,45 @@ func GetExtFull(l plog.Logger, db *sqlx.DB) ExtFull {
 		&queryContextLogger{
 			logger:         l,
 			queryerContext: db,
+		},
+		&txBeginner{
+			l:  l,
+			db: *db,
+		},
+	}
+}
+
+// NewExtFullFromTx returns an implementation of ExtFullTx backed by
+// whatever database underlies the db variable provided to it.
+func NewExtFullFromTx(l plog.Logger, tx *sqlx.Tx) ExtFull {
+	return struct {
+		binder
+		sqlx.Execer
+		sqlx.ExecerContext
+		sqlx.Queryer
+		sqlx.QueryerContext
+		txFull
+	}{
+		tx,
+		&execLogger{
+			logger: l,
+			execer: tx,
+		},
+		&execContextLogger{
+			logger:        l,
+			execerContext: tx,
+		},
+		&queryLogger{
+			logger:  l,
+			queryer: tx,
+		},
+		&queryContextLogger{
+			logger:         l,
+			queryerContext: tx,
+		},
+		&txCloser{
+			l: l,
+			t: *tx,
 		},
 	}
 }

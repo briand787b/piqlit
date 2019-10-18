@@ -69,8 +69,6 @@ func (m *Media) Delete(ctx context.Context, ms MediaStore) error {
 }
 
 // Download returns a closable stream of the Media's contents
-//
-// TODO: figure out how to key off the name for object storage
 func (m *Media) Download(ctx context.Context, l plog.Logger, os obj.ObjectStore) (io.ReadCloser, error) {
 	if m.UploadStatus != obj.UploadDone {
 		return nil, perr.NewErrNotFound(errors.New("requested Media has not completed uploading"))
@@ -84,10 +82,32 @@ func (m *Media) Download(ctx context.Context, l plog.Logger, os obj.ObjectStore)
 	return rc, nil
 }
 
+// Persist x
+func (m *Media) Persist(ctx context.Context, l plog.Logger, mts MediaTxCtlStore) error {
+	txCtl, err := mts.Begin(ctx)
+	if err != nil {
+		return errors.Wrap(err, "could not begin tx")
+	}
+
+	if err := m.persist(ctx, l, mts); err != nil {
+		if err := txCtl.Rollback(ctx); err != nil {
+			l.Error(ctx, "could not roll back tx for Persist", "media", m, "error", err)
+		}
+
+		return errors.Wrap(err, "could not persist Media")
+	}
+
+	if err := txCtl.Commit(ctx); err != nil {
+		l.Error(ctx, "could not commit tx", "error", err)
+	}
+
+	return nil
+}
+
 // Persist saves a Media to persistent storage
 //
 // TODO: figure out rollback strategy
-func (m *Media) Persist(ctx context.Context, l plog.Logger, ms MediaStore) error {
+func (m *Media) persist(ctx context.Context, l plog.Logger, ms MediaStore) error {
 	if err := m.Validate(ctx, l); err != nil {
 		return errors.Wrap(err, "could not validate Media")
 	}
@@ -108,7 +128,7 @@ func (m *Media) Persist(ctx context.Context, l plog.Logger, ms MediaStore) error
 
 	var cIDs []int
 	for _, c := range m.Children {
-		if err := c.Persist(ctx, l, ms); err != nil {
+		if err := c.persist(ctx, l, ms); err != nil {
 			return errors.Wrap(err, "could not persist children")
 		}
 

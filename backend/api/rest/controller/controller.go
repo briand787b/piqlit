@@ -16,7 +16,7 @@ import (
 )
 
 // Serve is a blocking function that serves HTTP
-func Serve(port int, l plog.Logger, ms model.MediaStore, os obj.ObjectStore) {
+func Serve(port int, l plog.Logger, ms model.MediaTxCtlStore, os obj.ObjectStore) {
 	mc := NewMediaController(l, ms, os)
 	mw := NewMiddleware(l, uuid.New())
 

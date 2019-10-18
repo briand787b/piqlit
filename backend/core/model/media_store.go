@@ -4,6 +4,14 @@ import (
 	"context"
 )
 
+// MediaTxCtlStore x
+type MediaTxCtlStore interface {
+	Begin(context.Context) (MediaTxCtlStore, error)
+	Commit(context.Context) error
+	Rollback(context.Context) error
+	MediaStore
+}
+
 // MediaStore is anything that can store and retrieve Media records from a database
 type MediaStore interface {
 	AssociateParentIDWithChildIDs(ctx context.Context, pID int, cIDs ...int) error

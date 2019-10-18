@@ -18,12 +18,12 @@ import (
 // MediaController controls the flow of HTTP routes for Media resources
 type MediaController struct {
 	l  plog.Logger
-	ms model.MediaStore
+	ms model.MediaTxCtlStore
 	os obj.ObjectStore
 }
 
 // NewMediaController returns a new MediaController
-func NewMediaController(l plog.Logger, ms model.MediaStore, os obj.ObjectStore) *MediaController {
+func NewMediaController(l plog.Logger, ms model.MediaTxCtlStore, os obj.ObjectStore) *MediaController {
 	return &MediaController{
 		l:  l,
 		ms: ms,
@@ -77,6 +77,7 @@ func (c *MediaController) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	mr, err := model.FindMediaByID(ctx, c.ms, m.ID)
 	if err != nil {
 		render.Render(w, r, newErrResponse(ctx, c.l, err))
+		return
 	}
 
 	render.Status(r, http.StatusCreated)
