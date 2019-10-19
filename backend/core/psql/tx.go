@@ -41,6 +41,7 @@ type txCloser struct {
 	t sqlx.Tx
 }
 
+// This is effectively a nop to satisfy the interface
 func (t *txCloser) Begin(ctx context.Context, opts *sql.TxOptions) (*sqlx.Tx, error) {
 	return nil, errors.New("attempting to begin an already begun Tx")
 }
