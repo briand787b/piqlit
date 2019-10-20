@@ -22,16 +22,16 @@ type txBeginner struct {
 }
 
 func (t *txBeginner) Begin(ctx context.Context, opts *sql.TxOptions) (*sqlx.Tx, error) {
-	t.l.Info(ctx, "beginning transaction")
+	t.l.Info(ctx, "beginning tx")
 	return t.db.BeginTxx(ctx, opts)
 }
 
-// This is effectively a nop to satisfy the interface
+// This is effectively a no-op to satisfy the interface
 func (t *txBeginner) Commit(ctx context.Context) error {
 	return errors.New("attempting to Commit non-Tx DB connection")
 }
 
-// This is effectively a nop to satisfy the interface
+// This is effectively a no-op to satisfy the interface
 func (t *txBeginner) Rollback(ctx context.Context) error {
 	return errors.New("attempting to Rollback non-Tx DB connection")
 }
@@ -41,7 +41,7 @@ type txCloser struct {
 	t sqlx.Tx
 }
 
-// This is effectively a nop to satisfy the interface
+// This is effectively a no-op to satisfy the interface
 func (t *txCloser) Begin(ctx context.Context, opts *sql.TxOptions) (*sqlx.Tx, error) {
 	return nil, errors.New("attempting to begin an already begun Tx")
 }

@@ -1,25 +1,9 @@
 version: "3.7"
 
 services:
-  backend-master-api:
+  backend:
     command: [ "/root/app", "--port", "8080", "--data", "/var/piqlit", "--master" ]
     volumes:
       - type: bind
-        source: ./filesys/master
+        source: ./filesys/backend
         target: /var/piqlit
-  backend-slave-api-1:
-    image: "briand787b/piqlit-backend-api:latest"
-    command: ["/root/app", "--port", "8080"]
-    ports:
-      - "${SLAVE_PORT_1:-8081}:8080"
-    networks:
-      - public
-      - private
-  backend-slave-api-2:
-    image: "briand787b/piqlit-backend-api:latest"
-    command: ["/root/app", "--port", "8080"]
-    ports:
-      - "${SLAVE_PORT_2:-8082}:8080"
-    networks:
-      - public
-      - private

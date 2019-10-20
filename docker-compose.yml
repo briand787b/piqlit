@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  backend-master-api:
+  backend:
     build:
       context: ./backend
       dockerfile: ./api/rest/Dockerfile
