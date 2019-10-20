@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  backend-master-api-test:
+  backend-test:
     build:
       context: ./backend
       dockerfile: ./api/rest/Dockerfile
