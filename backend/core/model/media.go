@@ -56,6 +56,8 @@ func FindMediaByID(ctx context.Context, ms MediaStore, id int) (*Media, error) {
 }
 
 // Delete deletes the Media receiver from persistent storage
+//
+// TODO: delete all associations before deleting the actual record
 func (m *Media) Delete(ctx context.Context, ms MediaStore) error {
 	if m.ID == 0 {
 		return perr.NewErrInvalid("cannot delete Media that is not persisted")

@@ -1,9 +1,11 @@
 package perr
 
 import (
+	"context"
 	"fmt"
-	"log"
 	"strings"
+
+	"github.com/briand787b/piqlit/core/plog"
 
 	"github.com/pkg/errors"
 )
@@ -32,11 +34,9 @@ const (
 
 // GetExternalMsg extracts the message for the error that is suitable
 // for displaying externally
-//
-// TODO: make this function take the logger
-func GetExternalMsg(e error) string {
+func GetExternalMsg(ctx context.Context, l plog.Logger, e error) string {
 	if e == nil {
-		log.Println("WARNING: nil error passed to 'GetExternalMsg'")
+		l.Error(ctx, "nil error passed to 'GetExternalMsg'")
 		return ""
 	}
 
@@ -48,19 +48,8 @@ func GetExternalMsg(e error) string {
 
 		fallthrough
 	default:
-		return c.Error()
+		return "Internal Server Error"
 	}
-}
-
-// GetInternalMsg extracts the message for the error that is suitable
-// for internal logging
-func GetInternalMsg(e error) string {
-	if e == nil {
-		log.Println("WARNING: nil error passed to 'GetInternalMsg'")
-		return ""
-	}
-
-	return e.Error()
 }
 
 // NewErrInvalid returns a wrapped ErrInvalid

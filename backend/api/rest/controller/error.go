@@ -18,10 +18,8 @@ type ErrResponse struct {
 }
 
 func newErrResponse(ctx context.Context, l plog.Logger, err error) *ErrResponse {
-	l.Error(ctx, "error handling request", "error", err.Error())
-
 	er := ErrResponse{
-		StatusText: perr.GetExternalMsg(err),
+		StatusText: perr.GetExternalMsg(ctx, l, err),
 	}
 
 	switch errors.Cause(err) {
@@ -35,6 +33,10 @@ func newErrResponse(ctx context.Context, l plog.Logger, err error) *ErrResponse 
 		er.HTTPStatusCode = http.StatusInternalServerError
 	}
 
+	l.Error(ctx, "error handling request",
+		"status_code", er.HTTPStatusCode,
+		"error", err.Error(),
+	)
 	return &er
 }
 
