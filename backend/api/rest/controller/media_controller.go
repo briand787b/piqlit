@@ -93,7 +93,7 @@ func (c *MediaController) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := m.Delete(ctx, c.ms); err != nil {
+	if err := m.Delete(ctx, c.l, c.ms); err != nil {
 		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not delete resource")))
 	}
 

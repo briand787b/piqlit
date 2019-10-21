@@ -41,6 +41,10 @@ func GetExternalMsg(ctx context.Context, l plog.Logger, e error) string {
 	}
 
 	switch c := errors.Cause(e); {
+	case c == ErrNotFound:
+		return "Resource Not Found"
+	case c == ErrUnauthorized:
+		return "Request Not Authorized to Perform Action"
 	case c == ErrInvalid:
 		if es := strings.Split(e.Error(), ":"); len(es) > 1 {
 			return strings.TrimSpace(fmt.Sprintf("%s: %s", es[len(es)-1], es[len(es)-2]))

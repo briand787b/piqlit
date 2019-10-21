@@ -56,11 +56,34 @@ func FindMediaByID(ctx context.Context, ms MediaStore, id int) (*Media, error) {
 }
 
 // Delete deletes the Media receiver from persistent storage
-//
-// TODO: delete all associations before deleting the actual record
-func (m *Media) Delete(ctx context.Context, ms MediaStore) error {
+func (m *Media) Delete(ctx context.Context, l plog.Logger, mts MediaTxCtlStore) error {
 	if m.ID == 0 {
 		return perr.NewErrInvalid("cannot delete Media that is not persisted")
+	}
+
+	var err error
+	if mts, err = mts.Begin(ctx); err != nil {
+		return errors.Wrap(err, "could not begin tx")
+	}
+
+	if err := m.delete(ctx, mts); err != nil {
+		if err := mts.Rollback(ctx); err != nil {
+			l.Error(ctx, "could not roll back tx")
+		}
+
+		return errors.Wrap(err, "could not delete by ID")
+	}
+
+	if err := mts.Commit(ctx); err != nil {
+		return errors.Wrap(err, "could not commit tx")
+	}
+
+	return nil
+}
+
+func (m *Media) delete(ctx context.Context, ms MediaStore) error {
+	if err := ms.DisassociateParentIDFromChildren(ctx, m.ID); err != nil {
+		return errors.Wrap(err, "could not disassociate parent from children")
 	}
 
 	if err := ms.DeleteByID(ctx, m.ID); err != nil {
