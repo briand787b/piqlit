@@ -5,17 +5,17 @@ import (
 	"io"
 )
 
-// Decompressor is capable of reading uncompressed data
+// GZDecompressor is capable of reading uncompressed data
 // and having compressed data read out of it
-type Decompressor struct {
+type GZDecompressor struct {
 	rc io.ReadCloser
 	gr *gzip.Reader
 	pr *io.PipeReader
 	pw *io.PipeWriter
 }
 
-// NewDecompressor returns a new Decompressor
-func NewDecompressor(rc io.ReadCloser) (*Decompressor, error) {
+// NewGZDecompressor returns a new GZDecompressor
+func NewGZDecompressor(rc io.ReadCloser) (*GZDecompressor, error) {
 	gr, err := gzip.NewReader(rc)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func NewDecompressor(rc io.ReadCloser) (*Decompressor, error) {
 		}
 	}()
 
-	return &Decompressor{
+	return &GZDecompressor{
 		gr: gr,
 		pr: pr,
 		pw: pw,
@@ -41,13 +41,13 @@ func NewDecompressor(rc io.ReadCloser) (*Decompressor, error) {
 
 // Read reads from the uncompressed stream and fills in the
 // supplied byte slice with compressed data
-func (d *Decompressor) Read(p []byte) (int, error) {
+func (d *GZDecompressor) Read(p []byte) (int, error) {
 	return d.pr.Read(p)
 }
 
 // Close closes all the associated resources of the
-// Decompressor
-func (d *Decompressor) Close() error {
+// GZDecompressor
+func (d *GZDecompressor) Close() error {
 	if err := d.rc.Close(); err != nil {
 		return err
 	}

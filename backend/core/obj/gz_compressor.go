@@ -8,23 +8,23 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Compressor wraps uncompressed data and provides it in a compressed format
+// GZCompressor wraps uncompressed data and provides it in a compressed format
 // through its Read method
-type Compressor struct {
+type GZCompressor struct {
 	rc io.ReadCloser
 	gw *gzip.Writer
 	pw *io.PipeWriter
 	pr *io.PipeReader
 }
 
-// NewCompressor instantiates a Compressor
-func NewCompressor(rc io.ReadCloser) *Compressor {
+// NewGZCompressor instantiates a GZCompressor
+func NewGZCompressor(rc io.ReadCloser) *GZCompressor {
 	pr, pw := io.Pipe()
 	gw := gzip.NewWriter(pw)
 
 	go func() {
 		if _, err := io.Copy(gw, rc); err != nil {
-			log.Println("NewCompressor: could not copy from ReadCloser: ", err)
+			log.Println("NewGZCompressor: could not copy from ReadCloser: ", err)
 			log.Println(gw.Close())
 			pw.CloseWithError(err)
 		} else {
@@ -33,7 +33,7 @@ func NewCompressor(rc io.ReadCloser) *Compressor {
 		}
 	}()
 
-	return &Compressor{
+	return &GZCompressor{
 		rc: rc,
 		gw: gw,
 		pw: pw,
@@ -41,13 +41,13 @@ func NewCompressor(rc io.ReadCloser) *Compressor {
 	}
 }
 
-// Read reads compressed data from Compressor
-func (c *Compressor) Read(p []byte) (int, error) {
+// Read reads compressed data from GZCompressor
+func (c *GZCompressor) Read(p []byte) (int, error) {
 	return c.pr.Read(p)
 }
 
-// Close closes all the resoprces used by Compressor
-func (c *Compressor) Close() error {
+// Close closes all the resoprces used by GZCompressor
+func (c *GZCompressor) Close() error {
 	var returnErr error
 
 	if err := c.rc.Close(); err != nil {

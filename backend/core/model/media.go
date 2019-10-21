@@ -131,8 +131,6 @@ func (m *Media) Persist(ctx context.Context, l plog.Logger, mts MediaTxCtlStore)
 }
 
 // Persist saves a Media to persistent storage
-//
-// TODO: figure out rollback strategy
 func (m *Media) persist(ctx context.Context, l plog.Logger, ms MediaStore) error {
 	if err := m.Validate(ctx, l); err != nil {
 		return errors.Wrap(err, "could not validate Media")
@@ -234,9 +232,14 @@ func (m *Media) insert(ctx context.Context, l plog.Logger, ms MediaStore) error 
 		return perr.NewErrInvalid(fmt.Sprintf("name '%s' already exists in database", m.Name))
 	}
 
+	if m.Length == 0 {
+		m.UploadStatus = obj.UploadDone
+	} else {
+		m.UploadStatus = obj.UploadNotStarted
+	}
+
 	now := time.Now().UTC().Truncate(time.Second)
 	m.CreatedAt, m.UpdatedAt = now, now
-	m.UploadStatus = obj.UploadNotStarted
 	return ms.Insert(ctx, m)
 }
 
@@ -247,6 +250,11 @@ func (m *Media) update(ctx context.Context, l plog.Logger, ms MediaStore) error 
 		return perr.NewErrNotFound(errors.Wrap(err, "could not find "))
 	}
 
+	// do not update media that are mid-upload
+	if mm.UploadStatus == obj.UploadInProgress {
+		return perr.NewErrInvalid("cannot update media that is currently being uploaded")
+	}
+
 	l.Info(ctx, "Media to update", "pre-update value", mm)
 
 	if mm.Name != m.Name {
@@ -255,7 +263,20 @@ func (m *Media) update(ctx context.Context, l plog.Logger, ms MediaStore) error 
 		}
 	}
 
-	m.UploadStatus = mm.UploadStatus
+	if m.Length == 0 {
+		// if obj has no content, it should always have an upload status of 'done'
+		m.UploadStatus = obj.UploadDone
+	} else if mm.Length < 1 {
+		// if obj had no content, but now does, its previously 'done' upload status is now invalid
+		m.UploadStatus = obj.UploadNotStarted
+	} else if m.Length != mm.Length {
+		// if content length changed, previous upload status is now invalid
+		m.UploadStatus = obj.UploadNotStarted
+	} else {
+		// in all other cases, the updated object has the same status it previously had
+		m.UploadStatus = mm.UploadStatus
+	}
+
 	m.CreatedAt = mm.CreatedAt
 	m.UpdatedAt = time.Now().UTC().Truncate(time.Second)
 	return ms.Update(ctx, m)

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/obj"
@@ -18,6 +19,7 @@ type MediaRequest struct {
 
 // Bind does processing on the MediaRequest after it gets decoded
 func (m *MediaRequest) Bind(r *http.Request) error {
+	m.Encoding = obj.Encoding(strings.ToLower(string(m.Encoding)))
 	return nil
 }
 
@@ -47,6 +49,7 @@ type MediaUpdateRequest struct {
 
 // Bind does processing on the MediaRequest after it gets decoded
 func (m *MediaUpdateRequest) Bind(r *http.Request) error {
+	m.Encoding = obj.Encoding(strings.ToLower(string(m.Encoding)))
 	return nil
 }
 
