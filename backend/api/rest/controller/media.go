@@ -37,6 +37,29 @@ func (m *MediaRequest) Media() *model.Media {
 	return &mm
 }
 
+// MediaUpdateRequest is a MediaRequest lacking the `Children` field
+type MediaUpdateRequest struct {
+	ID       int          `json:"id"`
+	Name     string       `json:"name"`
+	Length   int64        `json:"length"`
+	Encoding obj.Encoding `json:"encoding"`
+}
+
+// Bind does processing on the MediaRequest after it gets decoded
+func (m *MediaUpdateRequest) Bind(r *http.Request) error {
+	return nil
+}
+
+// Media converts a MediaRequest to a model.Media
+func (m *MediaUpdateRequest) Media() *model.Media {
+	return &model.Media{
+		ID:       m.ID,
+		Name:     m.Name,
+		Length:   m.Length,
+		Encoding: m.Encoding,
+	}
+}
+
 // MediaResponse represents the response object for Media requests
 type MediaResponse struct {
 	model.Media

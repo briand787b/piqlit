@@ -57,7 +57,7 @@ func (c *MediaController) mediaCtx(next http.Handler) http.Handler {
 	})
 }
 
-// HandleCreate Handles Media creation
+// HandleCreate handles Media creation
 func (c *MediaController) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -95,6 +95,7 @@ func (c *MediaController) HandleDelete(w http.ResponseWriter, r *http.Request) {
 
 	if err := m.Delete(ctx, c.l, c.ms); err != nil {
 		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not delete resource")))
+		return
 	}
 
 	render.Status(r, http.StatusOK)
@@ -111,33 +112,35 @@ func (c *MediaController) HandleGetByID(w http.ResponseWriter, r *http.Request) 
 	render.Render(w, r, NewMediaResponse(m))
 }
 
-// HandleUpdate handles updates to the root Media specified in the request id
-func (c *MediaController) HandleUpdate(w http.ResponseWriter, r *http.Request) {
+// HandleUpdateShallow handles updates to the root Media specified in the request id
+func (c *MediaController) HandleUpdateShallow(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	m, ok := ctx.Value(mediaCtxKey).(*model.Media)
-	if !ok {
-		render.Render(w, r, newErrResponse(r.Context(), c.l, perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))))
-		return
-	}
-
-	var data MediaRequest
+	var data MediaUpdateRequest
 	if err := render.Bind(r, &data); err != nil {
 		render.Render(w, r, newErrResponse(ctx, c.l, perr.NewErrInvalid("could not bind request body to Media")))
 		return
 	}
 
 	mBody := data.Media()
-	mBody.ID = m.ID
-	if err := mBody.Persist(ctx, c.l, c.ms); err != nil {
+
+	if m, ok := ctx.Value(mediaCtxKey).(*model.Media); ok {
+		mBody.ID = m.ID
+	} else {
+		render.Render(w, r, newErrResponse(r.Context(), c.l, perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))))
+		return
+	}
+
+	if err := mBody.UpdateShallow(ctx, c.l, c.ms); err != nil {
 		render.Render(w, r, newErrResponse(ctx, c.l, err))
 		return
 	}
 
 	// returned Media must be searched to get all created/updated children
-	mr, err := model.FindMediaByID(ctx, c.ms, m.ID)
+	mr, err := model.FindMediaByID(ctx, c.ms, mBody.ID)
 	if err != nil {
 		render.Render(w, r, newErrResponse(ctx, c.l, err))
+		return
 	}
 
 	render.Status(r, http.StatusCreated)

@@ -170,6 +170,15 @@ func (m *Media) persist(ctx context.Context, l plog.Logger, ms MediaStore) error
 	return nil
 }
 
+// UpdateShallow only updates the fields on the provided Media record, and not its children
+func (m *Media) UpdateShallow(ctx context.Context, l plog.Logger, ms MediaStore) error {
+	if err := m.Validate(ctx, l); err != nil {
+		return errors.Wrap(err, "could not validate Media")
+	}
+
+	return m.update(ctx, l, ms)
+}
+
 // Upload uploads the provided contents to object storage
 func (m *Media) Upload(ctx context.Context, l plog.Logger, os obj.ObjectStore, ms MediaStore, content io.ReadCloser) error {
 	if m.Length < 1 {
