@@ -1,6 +1,9 @@
 package plog
 
-import "context"
+import (
+	"context"
+	"io"
+)
 
 // LogWriter writes to the concrete type that
 type LogWriter interface {
@@ -14,6 +17,7 @@ type Logger interface {
 	Info(ctx context.Context, msg string, args ...interface{})
 
 	// specific event logging
+	Close(ctx context.Context, c io.Closer)
 	Invalid(ctx context.Context, subj interface{}, reason string)
 	Query(ctx context.Context, qry string, args ...interface{})
 }

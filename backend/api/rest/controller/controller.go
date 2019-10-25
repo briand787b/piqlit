@@ -32,7 +32,11 @@ func Serve(port int, l plog.Logger, ms model.MediaTxCtlStore, os obj.ObjectStore
 		r.Route("/{media_id}", func(r chi.Router) {
 			r.With(mc.mediaCtx).Delete("/", mc.HandleDelete)
 			r.With(mc.mediaCtx).Get("/", mc.HandleGetByID)
+			r.With(mc.mediaCtx).Get("/download/gzip", mc.HandleDownloadGZ)
+			r.With(mc.mediaCtx).Get("/download/raw", mc.HandleDownloadRaw)
 			r.With(mc.mediaCtx).Put("/", mc.HandleUpdateShallow)
+			r.With(mc.mediaCtx).Get("/stream/raw", mc.HandleStreamRaw)
+			r.With(mc.mediaCtx).Put("/upload/raw", mc.HandleRawUpload)
 		})
 	})
 

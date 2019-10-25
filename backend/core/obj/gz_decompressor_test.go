@@ -2,13 +2,16 @@ package obj_test
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/briand787b/piqlit/core/obj"
+	"github.com/briand787b/piqlit/core/plog"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -27,12 +30,15 @@ func TestDecompressor(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+			ctx := context.Background()
+			l := plog.NewPLogger(log.New(os.Stdout, "", 0), nil)
+
 			cF, err := os.Open(filepath.Join("testdata", t.Name(), "compress.gz"))
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			dc, err := obj.NewDecompressor(cF)
+			dc, err := obj.NewGZDecompressor(ctx, l, cF)
 			if err != nil {
 				t.Fatal(err)
 			}

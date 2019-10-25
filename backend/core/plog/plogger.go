@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/google/uuid"
@@ -51,6 +52,13 @@ func (l *PLogger) Invalid(ctx context.Context, subj interface{}, reason string) 
 	l.write(ctx, "INVALID", fmt.Sprintf("%T failed validation", subj),
 		[]string{"reason", reason},
 	)
+}
+
+// Close closes the io.Closer and logs the returned error if it is non-nil
+func (l *PLogger) Close(ctx context.Context, c io.Closer) {
+	if err := c.Close(); err != nil {
+		l.Error(ctx, "could not close io.Closer", "error", err.Error())
+	}
 }
 
 // Query writes QUERY-lvl logs

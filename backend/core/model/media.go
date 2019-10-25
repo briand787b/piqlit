@@ -23,6 +23,8 @@ type Media struct {
 	Children     []Media          `db:"children" json:"children"`
 	CreatedAt    time.Time        `db:"created_at" json:"created_at"`
 	UpdatedAt    time.Time        `db:"updated_at" json:"updated_at"`
+
+	Content io.ReadCloser `db:"-" json:"-"`
 }
 
 // FindMediaByID returns the Media with provided id
@@ -93,8 +95,8 @@ func (m *Media) delete(ctx context.Context, ms MediaStore) error {
 	return nil
 }
 
-// Download returns a closable stream of the Media's contents
-func (m *Media) Download(ctx context.Context, l plog.Logger, os obj.ObjectStore) (io.ReadCloser, error) {
+// DownloadGZ returns a closable stream of the Media's contents
+func (m *Media) DownloadGZ(ctx context.Context, l plog.Logger, os obj.ObjectStore) (io.ReadCloser, error) {
 	if m.UploadStatus != obj.UploadDone {
 		return nil, perr.NewErrNotFound(errors.New("requested Media has not completed uploading"))
 	}
@@ -105,6 +107,25 @@ func (m *Media) Download(ctx context.Context, l plog.Logger, os obj.ObjectStore)
 	}
 
 	return rc, nil
+}
+
+// DownloadRaw returns the stored bytes in the native encoding they were uploaded in
+func (m *Media) DownloadRaw(ctx context.Context, l plog.Logger, os obj.ObjectStore) (io.ReadCloser, error) {
+	if m.UploadStatus != obj.UploadDone {
+		return nil, perr.NewErrNotFound(errors.New("requested Media has not completed uploading"))
+	}
+
+	rc, err := os.Get(ctx, m.Name)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not get object from storage")
+	}
+
+	dc, err := obj.NewGZDecompressor(ctx, l, rc)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not create new gz decompressor")
+	}
+
+	return dc, nil
 }
 
 // Persist x
@@ -177,11 +198,10 @@ func (m *Media) UpdateShallow(ctx context.Context, l plog.Logger, ms MediaStore)
 	return m.update(ctx, l, ms)
 }
 
-// Upload uploads the provided contents to object storage
-func (m *Media) Upload(ctx context.Context, l plog.Logger, os obj.ObjectStore, ms MediaStore, content io.ReadCloser) error {
+// UploadRaw uploads the provided contents to object storage.  Objects are stored in a gzipped format
+func (m *Media) UploadRaw(ctx context.Context, l plog.Logger, ms MediaStore, os obj.ObjectStore) error {
 	if m.Length < 1 {
-		// zero-length objects cannot be uploaded - unsure if this is an error or not though
-		return nil
+		return perr.NewErrInvalid("zero-length files cannot be uploaded to - update record's length first")
 	}
 
 	m.UploadStatus = obj.UploadInProgress
@@ -189,7 +209,10 @@ func (m *Media) Upload(ctx context.Context, l plog.Logger, os obj.ObjectStore, m
 		return errors.Wrap(err, "could not update upload_status")
 	}
 
-	if err := os.Put(ctx, m.Name, content); err != nil {
+	gc := obj.NewGZCompressor(ctx, l, m.Content)
+	defer l.Close(ctx, gc)
+
+	if err := os.Put(ctx, m.Name, gc); err != nil {
 		m.UploadStatus = obj.UploadFailed
 		if err := ms.Update(ctx, m); err != nil {
 			l.Error(ctx, "could not update media fields", "UploadStatus", obj.UploadFailed)
@@ -225,8 +248,6 @@ func (m *Media) Validate(ctx context.Context, l plog.Logger) error {
 }
 
 // do not insert media with existing names
-//
-// TODO: set upload_status to `not_started` before insertion
 func (m *Media) insert(ctx context.Context, l plog.Logger, ms MediaStore) error {
 	if _, err := ms.GetByName(ctx, m.Name); err == nil {
 		return perr.NewErrInvalid(fmt.Sprintf("name '%s' already exists in database", m.Name))

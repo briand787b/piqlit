@@ -2,8 +2,10 @@ package obj
 
 import (
 	"compress/gzip"
+	"context"
 	"io"
-	"log"
+
+	"github.com/briand787b/piqlit/core/plog"
 
 	"github.com/pkg/errors"
 )
@@ -11,33 +13,37 @@ import (
 // GZCompressor wraps uncompressed data and provides it in a compressed format
 // through its Read method
 type GZCompressor struct {
-	rc io.ReadCloser
-	gw *gzip.Writer
-	pw *io.PipeWriter
-	pr *io.PipeReader
+	ctx context.Context // yes this is bad, but i cant pass a ctx to a func that conforms to a stdlib interface
+	l   plog.Logger
+	r   io.Reader
+	gw  *gzip.Writer
+	pw  *io.PipeWriter
+	pr  *io.PipeReader
 }
 
 // NewGZCompressor instantiates a GZCompressor
-func NewGZCompressor(rc io.ReadCloser) *GZCompressor {
+func NewGZCompressor(ctx context.Context, l plog.Logger, r io.Reader) *GZCompressor {
 	pr, pw := io.Pipe()
 	gw := gzip.NewWriter(pw)
 
 	go func() {
-		if _, err := io.Copy(gw, rc); err != nil {
-			log.Println("NewGZCompressor: could not copy from ReadCloser: ", err)
-			log.Println(gw.Close())
+		if _, err := io.Copy(gw, r); err != nil {
+			l.Error(ctx, "NewGZCompressor could not copy from ReadCloser", "error", err)
+			l.Close(ctx, gw)
 			pw.CloseWithError(err)
 		} else {
-			log.Println(gw.Close())
-			log.Println(pw.Close())
+			l.Close(ctx, gw)
+			l.Close(ctx, pw)
 		}
 	}()
 
 	return &GZCompressor{
-		rc: rc,
-		gw: gw,
-		pw: pw,
-		pr: pr,
+		ctx: ctx,
+		l:   l,
+		r:   r,
+		gw:  gw,
+		pw:  pw,
+		pr:  pr,
 	}
 }
 
@@ -50,21 +56,9 @@ func (c *GZCompressor) Read(p []byte) (int, error) {
 func (c *GZCompressor) Close() error {
 	var returnErr error
 
-	if err := c.rc.Close(); err != nil {
-		returnErr = errors.Wrap(returnErr, err.Error())
-		log.Println("could not close rc: ", err)
-	}
-	if err := c.gw.Close(); err != nil {
-		returnErr = errors.Wrap(returnErr, err.Error())
-		log.Println("could not close gw: ", err)
-	}
-	if err := c.pw.Close(); err != nil {
-		returnErr = errors.Wrap(returnErr, err.Error())
-		log.Println("Closecould not close pw: ", err)
-	}
 	if err := c.pr.Close(); err != nil {
 		returnErr = errors.Wrap(returnErr, err.Error())
-		log.Println("could not close pr: ", err)
+		c.l.Error(c.ctx, "could not close pipe reader", "error", err)
 	}
 
 	return returnErr

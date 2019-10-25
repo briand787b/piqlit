@@ -2,13 +2,16 @@ package obj_test
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/briand787b/piqlit/core/obj"
+	"github.com/briand787b/piqlit/core/plog"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -85,11 +88,15 @@ func TestCompressionFull(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			l := plog.NewPLogger(log.New(os.Stdout, "", 0), nil)
 
 			uf, err := os.Open(filepath.Join("testdata", t.Name(), tt.file))
 			if err != nil {
 				t.Fatal(err)
 			}
+
+			defer uf.Close()
 
 			st, err := uf.Stat()
 			if err != nil {
@@ -107,7 +114,7 @@ func TestCompressionFull(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			c := obj.NewCompressor(uf)
+			c := obj.NewGZCompressor(ctx, l, uf)
 			defer c.Close()
 
 			var zb bytes.Buffer
@@ -117,7 +124,7 @@ func TestCompressionFull(t *testing.T) {
 
 			t.Logf("compressed file size:\t%v", len(zb.Bytes()))
 
-			d, err := obj.NewDecompressor(ioutil.NopCloser(&zb))
+			d, err := obj.NewGZDecompressor(ctx, l, &zb)
 			if err != nil {
 				t.Fatal(err)
 			}
