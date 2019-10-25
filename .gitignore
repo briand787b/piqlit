@@ -3,10 +3,11 @@
 backend/api/rest/rest
 backend/api/grpc/grpc
 backend/cli/cli
-filesys/master/*
-filesys/slave_1/*
-filesys/slave_2/*
+filesys/backend/*
 
+#### VUE ####
+frontend/web/vue/node_modules
+frontend/web/vue/package-lock.json
 
 #### GO ####
 # Binaries for programs and plugins
