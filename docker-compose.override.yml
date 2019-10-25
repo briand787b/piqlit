@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   backend:
-    command: [ "/root/app", "--port", "8080", "--data", "/var/piqlit", "--master" ]
+    command: [ "/root/app", "--port", "8080", "--data", "/var/piqlit" ]
     volumes:
       - type: bind
         source: ./filesys/backend

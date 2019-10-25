@@ -6,12 +6,6 @@ services:
       context: ./backend
       dockerfile: ./api/rest/Dockerfile
       target: builder
-    environment:
-      PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"
-      PL_DATABASE_NAME: "${PL_DATABASE_NAME:-pl}"
-      PL_DATABASE_USER: "${PL_DATABASE_USER:-pl}"
-      PL_DATABASE_PASS: "${PL_DATABASE_PASS:-pl}"
-      PL_DATABASE_PORT: "${PL_DATABASE_PORT:-5432}"
     command: [ 
       "go", 
       "test", 
@@ -19,5 +13,12 @@ services:
       "-timeout",
       "30s"
     ]
+    environment:
+      PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"
+      PL_DATABASE_NAME: "${PL_DATABASE_NAME:-pl}"
+      PL_DATABASE_USER: "${PL_DATABASE_USER:-pl}"
+      PL_DATABASE_PASS: "${PL_DATABASE_PASS:-pl}"
+      PL_DATABASE_PORT: "${PL_DATABASE_PORT:-5432}"
+    
     networks: 
       - private

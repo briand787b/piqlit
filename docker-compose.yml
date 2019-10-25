@@ -1,11 +1,18 @@
 version: "3.7"
 
 services:
+  frontend-web-vue:
+    build:
+      context: ./frontend/web/vue
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./frontend/web/vue
+        target: /app
   backend:
     build:
       context: ./backend
       dockerfile: ./api/rest/Dockerfile
-    command: ["/root/app", "--port", "8080", "--master"]
     ports:
       - "${MASTER_PORT:-8080}:8080" 
     environment:
@@ -33,7 +40,14 @@ services:
       - private
     restart: unless-stopped
     healthcheck: 
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-pl}", "-d", "${POSTGRES_USER:-pl}"] 
+      test: [
+        "CMD", 
+        "pg_isready", 
+        "-U", 
+        "${POSTGRES_USER:-pl}", 
+        "-d", 
+        "${POSTGRES_USER:-pl}"
+      ] 
       interval: 10s 
       timeout: 5s 
       retries: 5
