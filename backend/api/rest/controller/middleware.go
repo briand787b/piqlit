@@ -24,3 +24,10 @@ func (m *Middleware) spanAndTrace(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+func (m *Middleware) logRoute(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		m.l.Info(r.Context(), "started handling HTTP request", "uri", r.RequestURI)
+		next.ServeHTTP(w, r)
+	})
+}

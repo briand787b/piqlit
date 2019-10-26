@@ -25,6 +25,7 @@ func Serve(port int, l plog.Logger, ms model.MediaTxCtlStore, os obj.ObjectStore
 	r.Use(middleware.Recoverer)
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 	r.Use(mw.spanAndTrace)
+	r.Use(mw.logRoute)
 
 	r.Route("/media", func(r chi.Router) {
 		r.Post("/", mc.HandleCreate)

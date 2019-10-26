@@ -4,9 +4,10 @@ services:
   frontend-web-vue:
     build:
       context: ./frontend/web/vue
-      dockerfile: Dockerfile
+      dockerfile: dev.Dockerfile
     ports:
-      - "3000:8080"
+      - 8080:8080
+      - 8081:8081
     volumes:
       - type: bind
         source: ./frontend/web/vue
@@ -15,8 +16,6 @@ services:
     build:
       context: ./backend
       dockerfile: ./api/rest/Dockerfile
-    ports:
-      - "${MASTER_PORT:-8080}:8080" 
     environment:
       ENV: ${ENV:-default-from-compose}
       PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"
@@ -37,7 +36,7 @@ services:
       POSTGRES_USER:  ${POSTGRES_USER:-pl}
       POSTGRES_PASSWORD: ${POSRGRES_PASSWORD:-pl}
     ports:
-      - "2345:5432"
+      - 2345:5432
     networks:
       - private
     restart: unless-stopped
