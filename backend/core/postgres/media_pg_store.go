@@ -110,6 +110,35 @@ func (mps *MediaPGStore) DisassociateParentIDFromChildren(ctx context.Context, p
 	return nil
 }
 
+// GetAllRootMedia returns all Media that are not children of other Media
+func (mps *MediaPGStore) GetAllRootMedia(ctx context.Context) ([]model.Media, error) {
+	var ms []model.Media
+	if err := sqlx.GetContext(ctx, mps.db, &ms, `
+		SELECT
+			id,
+			name,
+			length,
+			encoding,
+			upload_status,
+			created_at,
+			updated_at
+		FROM
+			media m
+		LEFT OUTER JOIN parent_child_media pcm
+		ON m.id = pcm.child_id
+		WHERE
+			pcm.child_id IS NULL;`,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, perr.NewErrNotFound(err)
+		}
+
+		return nil, errors.Wrap(err, "could not execute query")
+	}
+
+	return ms, nil
+}
+
 // GetByID returns a Media record by its id
 func (mps *MediaPGStore) GetByID(ctx context.Context, id int) (*model.Media, error) {
 	var m model.Media
