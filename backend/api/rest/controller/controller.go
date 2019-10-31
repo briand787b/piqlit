@@ -28,6 +28,7 @@ func Serve(port int, l plog.Logger, ms model.MediaTxCtlStore, os obj.ObjectStore
 	r.Use(mw.logRoute)
 
 	r.Route("/media", func(r chi.Router) {
+		r.Get("/", mc.HandleGetAllRoot)
 		r.Post("/", mc.HandleCreate)
 
 		r.Route("/{media_id}", func(r chi.Router) {

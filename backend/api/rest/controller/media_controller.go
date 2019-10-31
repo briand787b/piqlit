@@ -163,6 +163,17 @@ func (c *MediaController) HandleDownloadRaw(w http.ResponseWriter, r *http.Reque
 	render.Status(r, http.StatusOK)
 }
 
+// HandleGetAllRoot writes a MediaResponse on the connection
+func (c *MediaController) HandleGetAllRoot(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	ms, err := model.GetAllRootMedia(ctx, c.ms)
+	if err != nil {
+		render.Render(w, r, newErrResponse(ctx, c.l, err))
+	}
+
+	render.Render(w, r, NewMediaResponseList(ms, 0, 0))
+}
+
 // HandleGetByID writes a MediaResponse on the connection
 func (c *MediaController) HandleGetByID(w http.ResponseWriter, r *http.Request) {
 	m, ok := r.Context().Value(mediaCtxKey).(*model.Media)

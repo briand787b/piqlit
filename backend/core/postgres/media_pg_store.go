@@ -113,7 +113,7 @@ func (mps *MediaPGStore) DisassociateParentIDFromChildren(ctx context.Context, p
 // GetAllRootMedia returns all Media that are not children of other Media
 func (mps *MediaPGStore) GetAllRootMedia(ctx context.Context) ([]model.Media, error) {
 	var ms []model.Media
-	if err := sqlx.GetContext(ctx, mps.db, &ms, `
+	if err := sqlx.SelectContext(ctx, mps.db, &ms, `
 		SELECT
 			id,
 			name,

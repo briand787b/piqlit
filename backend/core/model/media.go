@@ -57,6 +57,16 @@ func FindMediaByID(ctx context.Context, ms MediaStore, id int) (*Media, error) {
 	return m, nil
 }
 
+// GetAllRootMedia x
+func GetAllRootMedia(ctx context.Context, ms MediaStore) ([]Media, error) {
+	mms, err := ms.GetAllRootMedia(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not get all root media from MediaStore")
+	}
+
+	return mms, nil
+}
+
 // Delete deletes the Media receiver from persistent storage
 func (m *Media) Delete(ctx context.Context, l plog.Logger, mts MediaTxCtlStore) error {
 	if m.ID == 0 {
