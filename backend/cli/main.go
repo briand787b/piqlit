@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/briand787b/piqlit/cli/cmd"
+)
 
 func main() {
-	fmt.Println("cli is still being built")
+	cmd.Execute()
 }

@@ -1,9 +1,0 @@
-{
-	"info": {
-		"_postman_id": "fb4dd568-2aaf-44db-a779-7a4ae016ef8b",
-		"name": "piqlit",
-		"description": "Postman collection for piqlit home movie manager Go backend API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": []
-}

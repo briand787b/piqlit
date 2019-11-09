@@ -6,6 +6,9 @@ services:
       - type: bind
         source: ./filesys/backend/test
         target: /var/piqlit
+  db:
+    volumes:
+      - db_test_data:/var/lib/postgresql/data 
   backend-test:
     build:
       context: ./backend
@@ -29,9 +32,22 @@ services:
       - db
     networks: 
       - private
-  db:
-    volumes:
-      - db_test_data:/var/lib/postgresql/data 
+  postman-test:
+    build:
+      context: ./backend
+      dockerfile: ./api/postman/Dockerfile
+    environment:
+      POSTMAN_API_KEY: "${POSTMAN_API_KEY}"
+      POSTMAN_COLLECTION_ID: "${POSTMAN_COLLECTION_ID}"
+      PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"
+      PL_DATABASE_NAME: "${PL_DATABASE_NAME:-pl}"
+      PL_DATABASE_USER: "${PL_DATABASE_USER:-pl}"
+      PL_DATABASE_PASS: "${PL_DATABASE_PASS:-pl}"
+      PL_DATABASE_PORT: "${PL_DATABASE_PORT:-5432}"
+    networks:
+      - private
+    depends_on:
+      - backend
 
 volumes:
   db_test_data:
