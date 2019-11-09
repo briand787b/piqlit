@@ -1,6 +1,11 @@
 version: "3.7"
 
 services:
+  backend:
+    volumes:
+      - type: bind
+        source: ./filesys/backend/test
+        target: /var/piqlit
   backend-test:
     build:
       context: ./backend
@@ -8,7 +13,8 @@ services:
       target: builder
     command: [ 
       "go", 
-      "test", 
+      "test",
+      "-race",
       "./...", 
       "-timeout",
       "30s"
@@ -19,6 +25,13 @@ services:
       PL_DATABASE_USER: "${PL_DATABASE_USER:-pl}"
       PL_DATABASE_PASS: "${PL_DATABASE_PASS:-pl}"
       PL_DATABASE_PORT: "${PL_DATABASE_PORT:-5432}"
-    
+    depends_on:
+      - db
     networks: 
       - private
+  db:
+    volumes:
+      - db_test_data:/var/lib/postgresql/data 
+
+volumes:
+  db_test_data:

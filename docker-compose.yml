@@ -1,21 +1,13 @@
 version: "3.7"
 
 services:
-  frontend-web-vue:
-    build:
-      context: ./frontend/web/vue
-      dockerfile: dev.Dockerfile
-    ports:
-      - 8080:8080
-      - 8081:8081
-    volumes:
-      - type: bind
-        source: ./frontend/web/vue
-        target: /app
   backend:
     build:
       context: ./backend
       dockerfile: ./api/rest/Dockerfile
+    command: [ "/root/app", "--port", "8000", "--data", "/var/piqlit" ]
+    ports:
+      - 8000:8000
     environment:
       ENV: ${ENV:-default-from-compose}
       PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"
@@ -52,15 +44,9 @@ services:
       interval: 10s 
       timeout: 5s 
       retries: 5
-    volumes:
-      - ${PL_DB_VOL:-db_data}:/var/lib/postgresql/data 
  
 networks:
   public:
     driver: bridge
   private:
     driver: bridge
-
-volumes:
-  db_data:    
-  db_test_data:

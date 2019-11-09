@@ -1,21 +1,12 @@
 <template>
-    <div v-if="truthy">
-      <p>{{ msg }}</p>
-      <ul>
-        <li :key="dog" v-for="dog in dogs">{{ dog }}</li>
-      </ul>
-      <p>Modified!</p>
-      <child-component :name="dogs[0]"></child-component>
+    <div>
+        <p>{{name}}</p>
     </div>
 </template>
 
 <script>
-import ChildComponent from './Child.vue';
 export default {
-  name: 'HelloWorld',
-  components: {
-    ChildComponent
-  },
+  name: 'child-component',
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
@@ -24,7 +15,12 @@ export default {
     }
   },
   computed: {},
-  props: {}
+  props: {
+      name: {
+        type: String,
+        required: true,
+      }
+  }
 }
 </script>
 

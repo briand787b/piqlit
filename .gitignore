@@ -3,7 +3,6 @@
 backend/api/rest/rest
 backend/api/grpc/grpc
 backend/cli/cli
-filesys/backend/*
 filesys/tmp/*
 
 #### VUE ####
