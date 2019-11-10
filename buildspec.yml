@@ -11,7 +11,7 @@ phases:
   build: 
     commands:
       - echo Build started on `date`
-      - echo Building Images
+      - echo Building Images...
       - docker-compose -f docker-compose.yml -f docker-compose.test.yml build 
       - echo Running Backend Unit Tests...
       - docker-compose -f docker-compose.yml -f docker-compose.test.yml run backend-test

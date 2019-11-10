@@ -2,6 +2,7 @@ package plogtest
 
 import (
 	"context"
+	"io"
 
 	"github.com/briand787b/piqlit/core/plog"
 )
@@ -10,6 +11,9 @@ var _ plog.Logger = &MockLogger{}
 
 // MockLogger is a mocked implementation of plog.Logger
 type MockLogger struct {
+	CloseCallCount int
+	CloseArgCloser []io.Closer
+
 	ErrorCallCount int
 	ErrorArgMsg    []string
 	ErrorArgArgs   [][]interface{}
@@ -25,6 +29,12 @@ type MockLogger struct {
 	QueryCallCount int
 	QueryArgQry    []string
 	QueryArgArgs   [][]interface{}
+}
+
+// Close x
+func (m *MockLogger) Close(ctx context.Context, c io.Closer) {
+	defer func() { m.CloseCallCount++ }()
+	m.CloseArgCloser = append(m.CloseArgCloser, c)
 }
 
 // Error x

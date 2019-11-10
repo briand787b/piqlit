@@ -11,9 +11,18 @@ test:
 	docker-compose \
 		-f docker-compose.yml \
 		-f docker-compose.test.yml \
-		up \
-			--build \
-			--force-recreate
-
+		build
+	-docker-compose \
+		-f docker-compose.yml \
+		-f docker-compose.test.yml \
+		run --rm backend-test
+	-docker-compose \
+		-f docker-compose.yml \
+		-f docker-compose.test.yml \
+		run --rm postman-test
+	docker-compose \
+		-f docker-compose.yml \
+		-f docker-compose.test.yml \
+		down
 
 	

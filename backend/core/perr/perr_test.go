@@ -1,10 +1,12 @@
 package perr_test
 
 import (
+	"context"
 	"database/sql"
 	"testing"
 
 	"github.com/briand787b/piqlit/core/perr"
+	"github.com/briand787b/piqlit/core/plog/plogtest"
 
 	"github.com/pkg/errors"
 )
@@ -52,64 +54,24 @@ func TestGetExternalMgs(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		name   string
-		es     []error
+		err    error
 		expMsg string
 	}{
 		{"nil_err_returns_empty_msg", nil, ""},
-		{"1_err_returns_its_msg", []error{errors.New("a")}, "a"},
-		{"2_errs_returns_1st_msg", []error{errors.New("a"), errors.New("b")}, "a"},
-		{"3_errs_returns_1st_msg", []error{errors.New("a"), errors.New("b"), errors.New("c")}, "a"},
-		{"base_val_returns_cause_msg", []error{perr.ErrInvalid}, "request invalid"},
-		{"val_returns_internal+provided_msg", []error{perr.NewErrInvalid("a")}, "request invalid: a"},
+		{"unknown_err_returns_internal_server_err", errors.New("a"), "Internal Server Error"},
+		{"auth_err_returns_unauth_msg", perr.ErrUnauthorized, "Request Not Authorized to Perform Action"},
+		{"invalid_err_returns_internal_server_err", perr.NewErrInvalid("b"), "request invalid: b"},
+		{"uninit_invalid_err_returns_internal_server_err", perr.ErrInvalid, "Internal Server Error"},
+		{"not_found_err_returns_invalid_msg", perr.ErrNotFound, "Resource Not Found"},
 	}
 
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+			ctx := context.Background()
 
-			var err error
-			if tt.es != nil || len(tt.es) > 0 {
-				err = tt.es[0]
-				for i := 1; i < len(tt.es); i++ {
-					err = errors.Wrap(err, tt.es[i].Error())
-				}
-			}
-
-			if retMsg := perr.GetExternalMsg(err); tt.expMsg != retMsg {
-				t.Fatalf("expected msg to be %s, was %s", tt.expMsg, retMsg)
-			}
-		})
-	}
-}
-
-func TestGetInternallMgs(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name   string
-		es     []error
-		expMsg string
-	}{
-		{"nil_err_returns_empty_msg", nil, ""},
-		{"1_err_returns_its_msg", []error{errors.New("a")}, "a"},
-		{"2_errs_returns_1st_msg", []error{errors.New("a"), errors.New("b")}, "b: a"},
-		{"3_errs_returns_1st_msg", []error{errors.New("a"), errors.New("b"), errors.New("c")}, "c: b: a"},
-	}
-
-	for _, tt := range tests {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			var err error
-			if tt.es != nil || len(tt.es) > 0 {
-				err = tt.es[0]
-				for i := 1; i < len(tt.es); i++ {
-					err = errors.Wrap(err, tt.es[i].Error())
-				}
-			}
-
-			if retMsg := perr.GetInternalMsg(err); tt.expMsg != retMsg {
+			if retMsg := perr.GetExternalMsg(ctx, &plogtest.MockLogger{}, tt.err); tt.expMsg != retMsg {
 				t.Fatalf("expected msg to be %s, was %s", tt.expMsg, retMsg)
 			}
 		})
