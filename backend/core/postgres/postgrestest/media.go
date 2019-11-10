@@ -33,13 +33,6 @@ func (h *PGHelper) CreateMedia(m *model.Media, index int) *model.Media {
 	}
 
 	h.L.Info(ctx, "created Media", "ID", m.ID)
-
-	h.CF.Add(func() {
-		if err := ms.DeleteByID(ctx, m.ID); err != nil {
-			h.T.Fatal("could not delete Media")
-		}
-	})
-
 	h.ParentIDs[Media] = m.ID
 	return m
 }

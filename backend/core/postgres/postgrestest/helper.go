@@ -1,6 +1,7 @@
 package postgrestest
 
 import (
+	"context"
 	"log"
 	"testing"
 	"time"
@@ -26,14 +27,26 @@ func NewPGHelper(t *testing.T) *PGHelper {
 	defer func() { tc <- struct{}{} }()
 
 	l := plogtest.MockLogger{}
+	db := postgres.GetExtFull(&l)
+	tx, err := db.Begin(context.Background(), nil)
+	if err != nil {
+		t.Fatal("NewPGHelper could not begin tx: ", err)
+	}
+
 	return &PGHelper{
 		Helper: test.Helper{
 			T:  t,
 			L:  &l,
 			Tm: time.Now().UTC().Truncate(time.Second),
-			CF: test.NewCleaner(func() { log.Println("Postgres Cleaned!!!!") }),
+			CF: test.NewCleaner(func() {
+				if err := tx.Rollback(); err != nil {
+					t.Fatal("could not roll back tx: ", err)
+				}
+
+				log.Println("Postgres Cleaned!!!!")
+			}),
 		},
-		DB:        postgres.GetExtFull(&l),
+		DB:        psql.NewExtFullFromTx(&l, tx),
 		ParentIDs: make(map[Table]int),
 	}
 }

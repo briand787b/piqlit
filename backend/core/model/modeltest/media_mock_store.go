@@ -6,12 +6,21 @@ import (
 	"github.com/briand787b/piqlit/core/model"
 )
 
+var _ model.MediaStore = &MediaMockStore{}
+
 // MediaMockStore is a mocked implementation of MediaStore
 type MediaMockStore struct {
 	AssociateParentIDWithChildIDsCallCount int
 	AssociateParentIDWithChildIDsArgPID    []int
 	AssociateParentIDWithChildIDsArgCIDs   [][]int
 	AssociateParentIDWithChildIDsReturnErr []error
+
+	BeginCallCount             int
+	BeginReturnMediaTxCtlStore []model.MediaTxCtlStore
+	BeginReturnErr             []error
+
+	CommitCallCount int
+	CommitReturnErr []error
 
 	DeleteByIDCallCount int
 	DeleteByIDArgID     []int
@@ -21,19 +30,26 @@ type MediaMockStore struct {
 	DisassociateParentIDFromChildrenArgPID    []int
 	DisassociateParentIDFromChildrenReturnErr []error
 
+	GetAllRootMediaCallCount   int
+	GetAllRootMediaReturnMedia [][]model.Media
+	GetAllRootMediaReturnErr   []error
+
 	GetByIDCallCount   int
 	GetByIDArgID       []int
 	GetByIDReturnMedia []*model.Media
 	GetByIDReturnErr   []error
 
-	InsertCallCount int
-	InsertArgMedia  []*model.Media
-	InsertReturnErr []error
-
 	GetByNameCallCount   int
 	GetByNameArgName     []string
 	GetByNameReturnMedia []*model.Media
 	GetByNameReturnErr   []error
+
+	InsertCallCount int
+	InsertArgMedia  []*model.Media
+	InsertReturnErr []error
+
+	RollbackCallCount int
+	RollbackReturnErr []error
 
 	SelectByParentIDCallCount   int
 	SelectByParentIDArgPID      []int
@@ -53,6 +69,19 @@ func (s *MediaMockStore) AssociateParentIDWithChildIDs(ctx context.Context, pID 
 	return s.AssociateParentIDWithChildIDsReturnErr[s.AssociateParentIDWithChildIDsCallCount]
 }
 
+// Begin x
+func (s *MediaMockStore) Begin(context.Context) (model.MediaTxCtlStore, error) {
+	defer func() { s.BeginCallCount++ }()
+	return s.BeginReturnMediaTxCtlStore[s.BeginCallCount],
+		s.BeginReturnErr[s.BeginCallCount]
+}
+
+// Commit x
+func (s *MediaMockStore) Commit(context.Context) error {
+	defer func() { s.CommitCallCount++ }()
+	return s.CommitReturnErr[s.CommitCallCount]
+}
+
 // DeleteByID x
 func (s *MediaMockStore) DeleteByID(ctx context.Context, id int) error {
 	defer func() { s.DeleteByIDCallCount++ }()
@@ -65,6 +94,13 @@ func (s *MediaMockStore) DisassociateParentIDFromChildren(ctx context.Context, p
 	defer func() { s.DisassociateParentIDFromChildrenCallCount++ }()
 	s.DisassociateParentIDFromChildrenArgPID = append(s.DisassociateParentIDFromChildrenArgPID, pID)
 	return s.DisassociateParentIDFromChildrenReturnErr[s.DisassociateParentIDFromChildrenCallCount]
+}
+
+// GetAllRootMedia x
+func (s *MediaMockStore) GetAllRootMedia(ctx context.Context) ([]model.Media, error) {
+	defer func() { s.GetAllRootMediaCallCount++ }()
+	return s.GetAllRootMediaReturnMedia[s.GetAllRootMediaCallCount],
+		s.GetAllRootMediaReturnErr[s.GetAllRootMediaCallCount]
 }
 
 // GetByID x
@@ -88,6 +124,12 @@ func (s *MediaMockStore) Insert(ctx context.Context, m *model.Media) error {
 	defer func() { s.InsertCallCount++ }()
 	s.InsertArgMedia = append(s.InsertArgMedia, m)
 	return s.InsertReturnErr[s.InsertCallCount]
+}
+
+// Rollback x
+func (s *MediaMockStore) Rollback(context.Context) error {
+	defer func() { s.RollbackCallCount++ }()
+	return s.RollbackReturnErr[s.RollbackCallCount]
 }
 
 // SelectByParentID x

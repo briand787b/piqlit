@@ -124,7 +124,7 @@ func TestCompressionFull(t *testing.T) {
 
 			t.Logf("compressed file size:\t%v", len(zb.Bytes()))
 
-			d, err := obj.NewGZDecompressor(ctx, l, &zb)
+			d, err := obj.NewGZDecompressor(ctx, l, ioutil.NopCloser(&zb))
 			if err != nil {
 				t.Fatal(err)
 			}
