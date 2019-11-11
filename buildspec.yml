@@ -11,12 +11,13 @@ phases:
   build: 
     commands:
       - echo Build started on `date`
-      - echo Building Images...
-      - docker-compose -f docker-compose.yml -f docker-compose.test.yml build 
-      - echo Running Backend Unit Tests...
-      - docker-compose -f docker-compose.yml -f docker-compose.test.yml run backend-test
-      - echo Running Postman Integration Tests...
-      - docker-compose -f docker-compose.yml -f docker-compose.test.yml run postman-test
+      - echo Running Tests...
+      - make test
+      # - docker-compose -f docker-compose.yml -f docker-compose.test.yml build 
+      # - echo Running Backend Unit Tests...
+      # - docker-compose -f docker-compose.yml -f docker-compose.test.yml run backend-test
+      # - echo Running Postman Integration Tests...
+      # - docker-compose -f docker-compose.yml -f docker-compose.test.yml run postman-test
   post_build: 
     commands:
       # put in command to NOT run post_build commands if build command fails
