@@ -20,7 +20,7 @@ services:
       "-race",
       "./...", 
       "-timeout",
-      "30s"
+      "60s"
     ]
     environment:
       PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"

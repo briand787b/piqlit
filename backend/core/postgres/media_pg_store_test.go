@@ -12,7 +12,6 @@ import (
 	"github.com/briand787b/piqlit/core/plog/plogtest"
 	"github.com/briand787b/piqlit/core/postgres"
 	"github.com/briand787b/piqlit/core/postgres/postgrestest"
-	"github.com/briand787b/piqlit/core/test"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
@@ -22,7 +21,6 @@ import (
 var _ model.MediaStore = &postgres.MediaPGStore{}
 
 func TestMediaPGStoreGetByID(t *testing.T) {
-	test.SkipLong(t)
 	tests := []struct {
 		name       string
 		count      int
@@ -109,7 +107,6 @@ func TestMediaPGStoreGetByID(t *testing.T) {
 }
 
 func TestMediaPGStoreInsertDelete(t *testing.T) {
-	test.SkipLong(t)
 	tests := []struct {
 		name string
 		m    model.Media
@@ -161,7 +158,6 @@ func TestMediaPGStoreInsertDelete(t *testing.T) {
 }
 
 func TestMediaParentChildAssociateDisassociateByID(t *testing.T) {
-	test.SkipLong(t)
 	tests := []struct {
 		name        string
 		numChildren int
@@ -233,7 +229,6 @@ func TestMediaParentChildAssociateDisassociateByID(t *testing.T) {
 }
 
 func TestEncodings(t *testing.T) {
-	test.SkipLong(t)
 	tests := []struct {
 		name        string
 		encodingStr string
@@ -279,7 +274,6 @@ func TestEncodings(t *testing.T) {
 }
 
 func TestMediaPGStoreUpdate(t *testing.T) {
-	test.SkipLong(t)
 	now := time.Now().UTC().Truncate(time.Second)
 	tests := []struct {
 		name     string

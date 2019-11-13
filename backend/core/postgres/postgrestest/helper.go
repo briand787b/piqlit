@@ -2,7 +2,9 @@ package postgrestest
 
 import (
 	"context"
+	"flag"
 	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -23,11 +25,18 @@ type PGHelper struct {
 // NewPGHelper returns a new PGHelper with all
 // necessary setup/connection operations complete
 func NewPGHelper(t *testing.T) *PGHelper {
+	flag.Parse()
+	if testing.Short() {
+		log.Println("skipping tests because `-test.short` flag provided")
+		os.Exit(0)
+	}
+
 	tc := test.SetTimeout(5 * time.Second)
 	defer func() { tc <- struct{}{} }()
 
-	l := plogtest.MockLogger{}
-	db := postgres.GetExtFull(&l)
+	l := plogtest.NewMockLogger()
+	db := postgres.GetExtFull(l)
+
 	tx, err := db.Begin(context.Background(), nil)
 	if err != nil {
 		t.Fatal("NewPGHelper could not begin tx: ", err)
@@ -36,7 +45,7 @@ func NewPGHelper(t *testing.T) *PGHelper {
 	return &PGHelper{
 		Helper: test.Helper{
 			T:  t,
-			L:  &l,
+			L:  l,
 			Tm: time.Now().UTC().Truncate(time.Second),
 			CF: test.NewCleaner(func() {
 				if err := tx.Rollback(); err != nil {
@@ -46,7 +55,7 @@ func NewPGHelper(t *testing.T) *PGHelper {
 				log.Println("Postgres Cleaned!!!!")
 			}),
 		},
-		DB:        psql.NewExtFullFromTx(&l, tx),
+		DB:        psql.NewExtFullFromTx(l, tx),
 		ParentIDs: make(map[Table]int),
 	}
 }

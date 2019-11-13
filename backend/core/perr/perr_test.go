@@ -71,7 +71,7 @@ func TestGetExternalMgs(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
 
-			if retMsg := perr.GetExternalMsg(ctx, &plogtest.MockLogger{}, tt.err); tt.expMsg != retMsg {
+			if retMsg := perr.GetExternalMsg(ctx, plogtest.NewMockLogger(), tt.err); tt.expMsg != retMsg {
 				t.Fatalf("expected msg to be %s, was %s", tt.expMsg, retMsg)
 			}
 		})

@@ -8,13 +8,6 @@ import (
 	"github.com/briand787b/piqlit/core/plog"
 )
 
-// SkipLong skips long or expensive tests when the -test.short flag is passed
-func SkipLong(t *testing.T) {
-	if testing.Short() {
-		t.Skip()
-	}
-}
-
 // Helper is a testing utility that facilitates rolling back
 // whatever changes were made to persistent storage during
 // the course of the test.  It is meant to be embedded by

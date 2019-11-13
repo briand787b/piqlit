@@ -70,8 +70,8 @@ func TestMediaValidate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			ml := plogtest.MockLogger{}
-			err := tt.m.Validate(plogtest.SpannedTracedCtx(), &ml)
+			ml := plogtest.NewMockLogger()
+			err := tt.m.Validate(plogtest.SpannedTracedCtx(), ml)
 
 			t.Logf("returned error: %s", err)
 			retErrCause := errors.Cause(err)
