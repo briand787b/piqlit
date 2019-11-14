@@ -18,7 +18,11 @@ phases:
   post_build: 
     commands:
       # put in command to NOT run post_build commands if build command fails
-      - docker image push docker briand787b/piqlit-vue-frontend:$(git rev-parse HEAD)
-      - docker image push docker briand787b/piqlit-go-backend:$(git rev-parse HEAD)
-      - docker image push docker briand787b/piqlit-pg-db:$(git rev-parse HEAD)
+      - docker login -u briand787b -p $DOCKER_HUB_PASSWORD
+      - docker image tag piqlit_frontend-web-vue briand787b/piqlit-vue-frontend:$(git rev-parse HEAD)
+      - docker image push briand787b/piqlit-vue-frontend:$(git rev-parse HEAD)
+      - docker image tag piqlit_backend briand787b/piqlit-go-backend:$(git rev-parse HEAD)
+      - docker image push briand787b/piqlit-go-backend:$(git rev-parse HEAD)
+      - docker image tag piqlit_db briand787b/piqlit-pg-db:$(git rev-parse HEAD)
+      - docker image push briand787b/piqlit-pg-db:$(git rev-parse HEAD)
       - echo Build completed on `date` 
