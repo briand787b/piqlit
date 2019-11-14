@@ -7,18 +7,18 @@ phases:
   pre_build: 
     commands: 
       - echo PWD - $(pwd)
+      - echo commit hash - $(git rev-parse HEAD)
       - echo ls - $(ls)
   build: 
     commands:
       - echo Build started on `date`
       - echo Running Tests...
       - make test
-      # - docker-compose -f docker-compose.yml -f docker-compose.test.yml build 
-      # - echo Running Backend Unit Tests...
-      # - docker-compose -f docker-compose.yml -f docker-compose.test.yml run backend-test
-      # - echo Running Postman Integration Tests...
-      # - docker-compose -f docker-compose.yml -f docker-compose.test.yml run postman-test
+      - docker-compose build
   post_build: 
     commands:
       # put in command to NOT run post_build commands if build command fails
+      - docker image push docker briand787b/piqlit-vue-frontend:$(git rev-parse HEAD)
+      - docker image push docker briand787b/piqlit-go-backend:$(git rev-parse HEAD)
+      - docker image push docker briand787b/piqlit-pg-db:$(git rev-parse HEAD)
       - echo Build completed on `date` 
