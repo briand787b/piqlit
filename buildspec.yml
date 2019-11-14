@@ -15,11 +15,12 @@ phases:
       - echo Running Tests...
       - make test
       - docker-compose build
+      # need to override frontend build because docker-compose uses dev.Dockerfile
+      - docker image build -t briand787b/piqlit-vue-frontend:$(git rev-parse HEAD) ./frontend/web/vue
   post_build: 
     commands:
       # put in command to NOT run post_build commands if build command fails
       - docker login -u briand787b -p $DOCKER_HUB_PASSWORD
-      - docker image tag piqlit_frontend-web-vue briand787b/piqlit-vue-frontend:$(git rev-parse HEAD)
       - docker image push briand787b/piqlit-vue-frontend:$(git rev-parse HEAD)
       - docker image tag piqlit_backend briand787b/piqlit-go-backend:$(git rev-parse HEAD)
       - docker image push briand787b/piqlit-go-backend:$(git rev-parse HEAD)
