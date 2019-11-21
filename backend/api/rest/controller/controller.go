@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/obj"
@@ -16,9 +17,9 @@ import (
 )
 
 // Serve is a blocking function that serves HTTP
-func Serve(port int, l plog.Logger, ms model.MediaTxCtlStore, os obj.ObjectStore) {
-	mc := NewMediaController(l, ms, os)
-	mw := NewMiddleware(l, uuid.New())
+func Serve(port int, l plog.Logger, ms model.MediaTxCtlStore, obs obj.ObjectStore) {
+	mc := NewMediaController(l, ms, obs)
+	mw := NewMiddleware(l, uuid.New(), os.Getenv(CorsEnvVarKey))
 
 	// initialize router
 	r := chi.NewRouter()
@@ -26,6 +27,7 @@ func Serve(port int, l plog.Logger, ms model.MediaTxCtlStore, os obj.ObjectStore
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 	r.Use(mw.spanAndTrace)
 	r.Use(mw.logRoute)
+	r.Use(mw.disableCORS)
 
 	r.Route("/media", func(r chi.Router) {
 		r.Get("/", mc.HandleGetAllRoot)
