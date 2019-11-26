@@ -11,7 +11,7 @@
 import axios from "axios";
 
 export default {
-  name: 'HelloWorld',
+  name: "HelloWorld",
   props: {
     id: {
       type: Number,
@@ -21,14 +21,15 @@ export default {
   data() {
     return {
       media: undefined
-    }
+    };
   },
   mounted() {
-    axios.get("http://localhost:8000/media/" + this.id).then((response) => {
-      this.media = response.data
-    })
+    const backendHost = process.env.VUE_APP_BACKEND_HOST;
+    axios.get("http://" + backendHost + "/media/" + this.id).then(response => {
+      this.media = response.data;
+    });
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

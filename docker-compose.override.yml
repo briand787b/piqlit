@@ -8,6 +8,8 @@ services:
     ports:
       - 8080:8080
       - 8081:8081
+    environment:
+      VUE_APP_BACKEND_HOST: ${VUE_BACKEND_HOST:-localhost:8000}
     volumes:
       - type: bind
         source: ./frontend/web/vue

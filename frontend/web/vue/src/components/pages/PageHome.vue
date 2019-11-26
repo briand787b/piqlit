@@ -14,7 +14,7 @@
     </div>
     <ul>
       <li :key="media.id" v-for="media in media_list">
-        <router-link :to="'/media/' + media.id" >{{ media.name }}</router-link>
+        <router-link :to="'/media/' + media.id">{{ media.name }}</router-link>
       </li>
     </ul>
   </div>
@@ -33,7 +33,8 @@ export default {
     };
   },
   mounted() {
-    axios.get("http://localhost:8000/media").then((response) => {
+    const backendHost = process.env.VUE_APP_BACKEND_HOST;
+    axios.get("http://" + backendHost + "/media").then(response => {
       for (const i in response.data.media) {
         this.media_list.push(response.data.media[i]);
       }
