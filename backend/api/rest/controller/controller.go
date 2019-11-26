@@ -19,7 +19,10 @@ import (
 // Serve is a blocking function that serves HTTP
 func Serve(port int, l plog.Logger, ms model.MediaTxCtlStore, obs obj.ObjectStore) {
 	mc := NewMediaController(l, ms, obs)
-	mw := NewMiddleware(l, uuid.New(), os.Getenv(CorsEnvVarKey))
+	mw, err := NewMiddleware(l, uuid.New(), os.Getenv(CorsEnvVarKey))
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// initialize router
 	r := chi.NewRouter()

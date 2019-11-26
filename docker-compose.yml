@@ -10,6 +10,7 @@ services:
       - 8000:8000
     environment:
       ENV: ${ENV:-default-from-compose}
+      PL_CORS_HOST: "${PL_CORS_HOST:-*}"
       PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"
       PL_DATABASE_NAME: "${PL_DATABASE_NAME:-pl}"
       PL_DATABASE_USER: "${PL_DATABASE_USER:-pl}"

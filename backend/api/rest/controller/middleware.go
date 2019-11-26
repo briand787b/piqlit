@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/briand787b/piqlit/core/plog"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -20,8 +22,20 @@ type Middleware struct {
 }
 
 // NewMiddleware returns a new Middleware
-func NewMiddleware(l plog.Logger, uuidGen fmt.Stringer, corsHost string) *Middleware {
-	return &Middleware{l: l, uuidGen: uuidGen, corsHost: corsHost}
+func NewMiddleware(l plog.Logger, uuidGen fmt.Stringer, corsHost string) (*Middleware, error) {
+	if l == nil {
+		return nil, errors.New("cannot have a nil logger")
+	}
+
+	if uuidGen == nil {
+		return nil, errors.New("cannot have a nil uuidGen")
+	}
+
+	if corsHost == "" {
+		l.Error(context.Background(), "corsHost is empty string")
+	}
+
+	return &Middleware{l: l, uuidGen: uuidGen, corsHost: corsHost}, nil
 }
 
 func (m *Middleware) spanAndTrace(next http.Handler) http.Handler {
