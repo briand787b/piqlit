@@ -4,12 +4,12 @@
     <button v-if="!creating_media" @click="creating_media = true">New Media</button>
     <div v-if="creating_media">
       <label for="name">Name</label>
-      <input type="text" name="name" />
+      <input v-model="media_name_input" type="text" name="name" />
       <label for="name">File</label>
-      <input type="file" name="file" />
+      <input ref="rootMediaFileInput" @change="newUploadFile" type="file" name="file" />
       <div>
         <button @click="creating_media = false">Cancel</button>
-        <button @click="creating_media = false">Submit</button>
+        <button @click="addNewMedia">Submit</button>
       </div>
     </div>
     <ul>
@@ -23,26 +23,57 @@
 <script>
 import axios from "axios";
 
+const backendHost = process.env.VUE_APP_BACKEND_HOST;
+const instance = axios.create({
+  baseURL: "http://" + backendHost,
+  timeout: 1000,
+  crossdomain: true,
+  withCredentials: false
+});
+
 export default {
   name: "PageHome",
   data() {
     return {
       creating_media: false,
       loading: true,
-      media_list: []
+      media_list: [],
+      media_name_input: undefined,
+      media_file_input: undefined
     };
   },
+  computed: {
+    inputFileEncoding() {
+      let arr = this.media_file_input.name.split(".");
+      return arr[arr.length - 1];
+    }
+  },
   mounted() {
-    const backendHost = process.env.VUE_APP_BACKEND_HOST;
-    axios.get("http://" + backendHost + "/media").then(response => {
+    instance.get("/media").then(response => {
       for (const i in response.data.media) {
         this.media_list.push(response.data.media[i]);
       }
     });
   },
   methods: {
+    newUploadFile() {
+      this.media_file_input = this.$refs["rootMediaFileInput"].files[0];
+    },
     addNewMedia() {
-      this.media_list.unshift({});
+      const body = {
+        name: this.media_name_input,
+        length: this.media_file_input.size,
+        encoding: this.inputFileEncoding
+      };
+      // console.log("POSTing " + JSON.stringify(body) + " to: " + url);
+      instance
+        .post("/media", body)
+        .then(response => {
+          console.log(response);
+        })
+        .catch(e => {
+          console.log(e);
+        });
     }
   }
 };

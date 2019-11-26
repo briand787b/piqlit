@@ -47,7 +47,10 @@ func (m *Middleware) spanAndTrace(next http.Handler) http.Handler {
 
 func (m *Middleware) logRoute(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m.l.Info(r.Context(), "started handling HTTP request", "uri", r.RequestURI)
+		m.l.Info(r.Context(), "started handling HTTP request",
+			"uri", r.RequestURI,
+			"method", r.Method,
+		)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -55,8 +58,8 @@ func (m *Middleware) logRoute(next http.Handler) http.Handler {
 func (m *Middleware) disableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", m.corsHost)
-		w.Header().Set("Access-Control-Allow-Methods", "POST,GET,PUT,DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Lang")
+		w.Header().Set("Access-Control-Allow-Methods", "POST,GET,PUT,DELETE,OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
 
 		next.ServeHTTP(w, r)
 	})

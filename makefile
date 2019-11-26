@@ -1,6 +1,7 @@
 run:
-	docker-compose build
 	docker-compose down
+	docker-compose build
+	docker-compose config
 	docker-compose up
 
 test:
