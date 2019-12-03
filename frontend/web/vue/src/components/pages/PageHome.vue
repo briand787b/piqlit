@@ -3,20 +3,34 @@
     <h3>Media</h3>
     <button v-if="!creating_media" @click="creating_media = true">New Media</button>
     <div v-if="creating_media">
-      <label for="name">Name</label>
-      <input v-model="media_name_input" type="text" name="name" />
-      <label for="name">File</label>
-      <input ref="rootMediaFileInput" @change="newUploadFile" type="file" name="file" />
+      <b-input-group>
+        <label for="name">Name</label>
+        <input v-model="media_name_input" type="text" name="name" />
+        <label for="name">File</label>
+        <input ref="rootMediaFileInput" @change="newUploadFile" type="file" name="file" />
+      </b-input-group>
       <div>
-        <button @click="creating_media = false">Cancel</button>
-        <button @click="addNewMedia">Submit</button>
+        <b-button-group>
+          <b-button class="btn" @click="creating_media = false">Cancel</b-button>
+          <b-button @click="addNewMedia">Submit</b-button>
+        </b-button-group>
       </div>
     </div>
-    <ul>
-      <li :key="media.id" v-for="media in media_list">
-        <router-link :to="'/media/' + media.id">{{ media.name }}</router-link>
-      </li>
-    </ul>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-2" :key="media.id" v-for="media in media_list">
+          <router-link :to="'/media/' + media.id">
+            <b-card
+              img-src="https://cdn.traileraddict.com/content/warner-bros-pictures/blade-runner-2049-poster-4.jpg"
+              :title="media.name"
+              class="mb-2"
+            >
+              <b-card-text>{{ media.name }}</b-card-text>
+            </b-card>
+          </router-link>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
