@@ -3,12 +3,10 @@
     <h3>Media</h3>
     <button v-if="!creating_media" @click="creating_media = true">New Media</button>
     <div v-if="creating_media">
-      <b-input-group>
         <label for="name">Name</label>
         <input v-model="media_name_input" type="text" name="name" />
         <label for="name">File</label>
         <input ref="rootMediaFileInput" @change="newUploadFile" type="file" name="file" />
-      </b-input-group>
       <div>
         <b-button-group>
           <b-button class="btn" @click="creating_media = false">Cancel</b-button>
@@ -26,6 +24,9 @@
               class="mb-2"
             >
               <b-card-text>{{ media.name }}</b-card-text>
+              <template v-slot:footer>
+                <em>Footer Slot</em>
+              </template>
             </b-card>
           </router-link>
         </div>
