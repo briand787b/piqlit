@@ -1,6 +1,7 @@
 #!/bin/bash
 
-git pull
+echo 'Make sure to execute this script from the root of project!'
+
 docker login -u briand787b -p $DOCKER_HUB_PASSWORD
 
 # build frontend-web-vue
