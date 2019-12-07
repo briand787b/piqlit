@@ -33,6 +33,12 @@ docker image tag briand787b/piqlit-go-backend:$(git rev-parse HEAD)-arm briand78
 docker image push briand787b/piqlit-go-backend:deployed-arm
 echo Finished Building Backend!
 
+read -r -p "deploy stack? [y/N] " response
+if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
+then
+    exit 0
+fi
+
 echo Deploying Stack...
 docker stack deploy -c docker-stack.arm.yml
 echo Finished Deploying Stack!
