@@ -24,7 +24,7 @@ services:
       - 8000:8000
     environment:
       PL_CORS_HOST: "${PL_CORS_HOST:-*}"
-      PL_DATABASE_HOST: "${PL_DATABASE_HOST:-repo.local}"
+      PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"
       PL_DATABASE_NAME: "${PL_DATABASE_NAME:-pl}"
       PL_DATABASE_USER: "${PL_DATABASE_USER:-pl}"
       PL_DATABASE_PASS: "${PL_DATABASE_PASS:-pl}"
@@ -40,7 +40,7 @@ services:
       labels:
         server: go
         arch: arm64
-  postgresql:
+  db:
     image: briand787b/piqlit-pg-db:deployed-arm
     ports: 
       - 5432:5432
