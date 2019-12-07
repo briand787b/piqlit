@@ -21,4 +21,4 @@ done
 
 echo "Starting Nginx"
 # MIGHT NEED TO REMOVE 'EXEC' SINCE IT WASN'T IN ORIGINAL SCRIPT
-nginx -g 'daemon off;'
+exec nginx -g 'daemon off;'
