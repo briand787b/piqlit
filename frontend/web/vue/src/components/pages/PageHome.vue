@@ -40,6 +40,7 @@ import axios from "axios";
 import Configuration from '../../configuration'
 
 var backendHost = Configuration.value('backendHost')
+console.log("Backend Host: ${backendHost}")
 console.log(backendHost)
 
 const instance = axios.create({
