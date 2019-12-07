@@ -40,5 +40,5 @@ then
 fi
 
 echo Deploying Stack...
-docker stack deploy -c docker-stack.arm.yml
+docker stack deploy -c docker-stack.arm.yml piqlit
 echo Finished Deploying Stack!
