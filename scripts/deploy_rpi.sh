@@ -3,6 +3,8 @@
 echo 'Make sure to execute this script from the root of project!'
 
 docker login -u briand787b -p $DOCKER_HUB_PASSWORD
+STATUS=$?
+[ $STATUS -eq 0 ] || exit 1
 
 # build frontend-web-vue
 echo Building Frontend...

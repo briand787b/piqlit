@@ -42,6 +42,7 @@ services:
         arch: arm64
   db:
     image: briand787b/piqlit-pg-db:deployed-arm
+    # remove ports - they don't need to be exposed on the host
     ports: 
       - 5432:5432
     environment:

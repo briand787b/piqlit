@@ -37,8 +37,11 @@
 
 <script>
 import axios from "axios";
+import Configuration from '../../configuration'
 
-const backendHost = process.env.VUE_APP_BACKEND_HOST;
+var backendHost = Configuration.value('backendHost')
+console.log(backendHost)
+
 const instance = axios.create({
   baseURL: "http://" + backendHost,
   timeout: 1000,
