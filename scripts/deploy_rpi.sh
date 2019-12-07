@@ -19,7 +19,8 @@ docker image push briand787b/piqlit-pg-db:deployed-arm
 # build backend-go
 docker image build \
     -t briand787b/piqlit-go-backend:$(git rev-parse HEAD)-arm \
-    --build-arg arch=arm arm=7 \
+    --build-arg arch=arm \
+    --build-arg arm=7 \
     -f ./backend/api/rest/Dockerfile \
     ./backend
 docker image push briand787b/piqlit-go-backend:$(git rev-parse HEAD)-arm
