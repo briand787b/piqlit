@@ -3,7 +3,7 @@ version: "3.7"
 
 services:
   frontend-web-vue:
-    image: briand787b/piqlit-vue-frontend:51098ed6f85ea0f35f5c93ab758b8823e7d403de-arm
+    image: briand787b/piqlit-vue-frontend:deployed-arm
     ports:
       - 80:80
     environment:
@@ -19,7 +19,7 @@ services:
         server: nginx
         arch: arm64
   backend:
-    image: briand787b/piqlit-go-backend:51098ed6f85ea0f35f5c93ab758b8823e7d403de-arm
+    image: briand787b/piqlit-go-backend:deployed-arm
     ports:
       - 8000:8000
     environment:
@@ -41,8 +41,9 @@ services:
         server: go
         arch: arm64
   postgresql:
-    image: briand787b/piqlit-pg-db:51098ed6f85ea0f35f5c93ab758b8823e7d403de-arm
-    ports: 5432:5432
+    image: briand787b/piqlit-pg-db:deployed-arm
+    ports: 
+      - 5432:5432
     environment:
       POSTGRES_USER:  ${POSTGRES_USER:-pl}
       POSTGRES_PASSWORD: ${POSRGRES_PASSWORD:-pl}
