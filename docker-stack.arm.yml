@@ -17,7 +17,7 @@ services:
         delay: 10s
       labels:
         server: nginx
-        arch: arm64
+        arch: armv7
   backend:
     image: briand787b/piqlit-go-backend:deployed-arm
     command: [ "/root/app", "--port", "8000", "--data", "/var/piqlit" ]
@@ -39,12 +39,9 @@ services:
         delay: 10s
       labels:
         server: go
-        arch: arm64
+        arch: armv7
   db:
     image: briand787b/piqlit-pg-db:deployed-arm
-    # remove ports - they don't need to be exposed on the host
-    ports: 
-      - 5432:5432
     environment:
       POSTGRES_USER:  ${POSTGRES_USER:-pl}
       POSTGRES_PASSWORD: ${POSRGRES_PASSWORD:-pl}
@@ -68,7 +65,7 @@ services:
       mode: global
       labels:
         server: postgresql
-        arch: arm64
+        arch: armv7
 
 networks:
   prod-net:

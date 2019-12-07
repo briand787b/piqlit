@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 # Need to have a docker-entrypoint.sh to get env vars into production Docker container
 # without recompiling for every different environment
-
-#!/bin/sh
 
 # Replace env vars in JavaScript files
 echo "Replacing env vars in JS"
