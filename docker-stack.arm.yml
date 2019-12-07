@@ -20,6 +20,7 @@ services:
         arch: arm64
   backend:
     image: briand787b/piqlit-go-backend:deployed-arm
+    command: [ "/root/app", "--port", "8000", "--data", "/var/piqlit" ]
     ports:
       - 8000:8000
     environment:
