@@ -44,7 +44,8 @@ console.log(backendHost)
 
 const instance = axios.create({
   baseURL: "http://" + backendHost,
-  timeout: 1000,
+  // TODO: change this to something reasonable
+  timeout: 100000000,
   crossdomain: true,
   withCredentials: false
 });
@@ -87,7 +88,7 @@ export default {
       instance
         .post("/media", body)
         .then(response => {
-          console.log(response);
+          console.log('POST response: ${response}');
           if (response.status > 299) {
             throw "non-2XX response status code"
           }
@@ -105,7 +106,7 @@ export default {
           })
         })
         .then((response) => {
-          console.log(response);
+          console.log('PUT response: ${response}');
           if (response.status > 299) {
             throw "non-2XX response status code"
           }
