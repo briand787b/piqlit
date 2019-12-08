@@ -6,6 +6,17 @@ backend/cli/cli
 filesys/tmp/*
 filesys/backend/*
 
+#### TERRAFORM ####
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .tfvars files
+*.tfvars
+
 #### VUE ####
 frontend/web/vue/node_modules
 frontend/web/vue/package-lock.json
