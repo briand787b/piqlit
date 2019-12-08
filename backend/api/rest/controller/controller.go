@@ -1,10 +1,13 @@
 package controller
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"reflect"
+	"runtime"
 
 	"github.com/briand787b/piqlit/core/model"
 	"github.com/briand787b/piqlit/core/obj"
@@ -55,5 +58,22 @@ func Serve(port int, l plog.Logger, ms model.MediaTxCtlStore, obs obj.ObjectStor
 	// 	w.WriteHeader(http.StatusOK)
 	// }))
 
+	ctx := plog.StoreSpanIDTraceID(context.Background(), "main", "main")
+	walkFn := func(method, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+		funcName := runtime.FuncForPC(reflect.ValueOf(handler).Pointer()).Name()
+		l.Info(ctx, "API Route",
+			"method", method,
+			"route", route,
+			"handler", funcName,
+		)
+		return nil
+	}
+
+	if err := chi.Walk(r, walkFn); err != nil {
+		log.Fatalln("could not print API routes: ", err)
+	}
+
+	// TODO: delete me after merge
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), r))
+	log.Fatalln(http.ListenAndServe(fmt.Sprintf(":%v", port), r))
 }

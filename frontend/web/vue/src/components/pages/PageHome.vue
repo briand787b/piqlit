@@ -70,6 +70,27 @@ export default {
         .post("/media", body)
         .then(response => {
           console.log(response);
+          if (response.status > 299) {
+            throw "non-2XX response status code"
+          }
+
+          this.media_list.push(response.data)
+        })
+        .then(() => {
+          let formdata = new FormData()
+          formdata.append('file', this.media_file_input)
+          let lastId = this.media_list[this.media_list.length -1].id
+          return instance.put('/media/'+lastId+'/upload/raw', formdata, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+        })
+        .then((response) => {
+          console.log(response);
+          if (response.status > 299) {
+            throw "non-2XX response status code"
+          }
         })
         .catch(e => {
           console.log(e);
@@ -79,7 +100,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
   margin: 40px 0 0;
@@ -89,8 +109,8 @@ ul {
   padding: 0;
 }
 li {
-  display: inline-block;
-  margin: 0 10px;
+  display: block;
+  margin: 10px 10px;
 }
 a {
   color: #42b983;
