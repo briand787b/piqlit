@@ -20,7 +20,7 @@ services:
         arch: armv7
   backend:
     image: briand787b/piqlit-go-backend:deployed-arm
-    command: [ "/root/app", "--port", "8000", "--data", "/var/piqlit" ]
+    command: [ "/root/app", "--port", "8000", "--data", "/var/piqlit/media" ]
     ports:
       - 8000:8000
     environment:
@@ -32,6 +32,11 @@ services:
       PL_DATABASE_PORT: "${PL_DATABASE_PORT:-5432}"
     networks:
       - prod-net
+    volumes:
+      - type: bind
+        # NOTE: this directory must exist on node
+        source: /var/piqlit/media
+        target: /var/piqlit/media
     deploy:
       replicas: 2
       update_config:

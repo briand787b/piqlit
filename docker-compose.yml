@@ -7,7 +7,7 @@ services:
       args: 
         - arch=amd64
       dockerfile: ./api/rest/Dockerfile
-    command: [ "/root/app", "--port", "8000", "--data", "/var/piqlit" ]
+    command: [ "/root/app", "--port", "8000", "--data", "/var/piqlit/media" ]
     ports:
       - 8000:8000
     environment:

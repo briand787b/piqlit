@@ -18,7 +18,7 @@ services:
     volumes:
       - type: bind
         source: ./filesys/backend/dev
-        target: /var/piqlit
+        target: /var/piqlit/media
   db:
     volumes:
       - db_data:/var/lib/postgresql/data 
