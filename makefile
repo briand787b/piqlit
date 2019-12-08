@@ -1,8 +1,31 @@
-run:
+run_dev:
 	docker-compose down
+	docker-compose \
+		-f docker-compose.yml \
+		-f docker-compose.prod.yml \
+		down
 	docker-compose build
 	docker-compose config
 	docker-compose up
+
+run_prod:
+	docker-compose down
+	docker-compose \
+		-f docker-compose.yml \
+		-f docker-compose.prod.yml \
+		down
+	docker-compose \
+		-f docker-compose.yml \
+		-f docker-compose.prod.yml \
+		build
+	docker-compose \
+		-f docker-compose.yml \
+		-f docker-compose.prod.yml \
+		config
+	docker-compose \
+		-f docker-compose.yml \
+		-f docker-compose.prod.yml \
+		up
 
 test:
 	docker-compose \

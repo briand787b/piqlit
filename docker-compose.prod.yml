@@ -1,0 +1,23 @@
+# run the production images locally
+version: '3.7'
+
+services:
+  frontend-web-vue:
+    build: ./frontend/web/vue
+    ports:
+      - 8080:80
+    environment:
+      VUE_APP_BACKEND_HOST: ${VUE_APP_BACKEND_HOST:-localhost:8000}
+    depends_on: 
+        - backend
+  backend:
+    volumes:
+      - type: bind
+        source: ./filesys/backend/dev
+        target: /var/piqlit
+  db:
+    volumes:
+      - db_data:/var/lib/postgresql/data 
+
+volumes:
+  db_data:    

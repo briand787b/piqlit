@@ -4,6 +4,8 @@ services:
   backend:
     build:
       context: ./backend
+      args: 
+        - arch=amd64
       dockerfile: ./api/rest/Dockerfile
     command: [ "/root/app", "--port", "8000", "--data", "/var/piqlit" ]
     ports:

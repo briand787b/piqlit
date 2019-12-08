@@ -12,6 +12,8 @@ services:
   backend-test:
     build:
       context: ./backend
+      args:
+        - arch=amd64
       dockerfile: ./api/rest/Dockerfile
       target: builder
     command: [ 

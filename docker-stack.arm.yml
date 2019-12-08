@@ -1,0 +1,75 @@
+# This stack is ONLY meant to be deployed to a single node swarm with an arm arch
+version: "3.7"
+
+services:
+  frontend-web-vue:
+    image: briand787b/piqlit-vue-frontend:deployed-arm
+    ports:
+      - 80:80
+    environment:
+      VUE_APP_BACKEND_HOST: "${VUE_APP_BACKEND_HOST:-repo.local:8000}"
+    networks:
+      - prod-net
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      labels:
+        server: nginx
+        arch: armv7
+  backend:
+    image: briand787b/piqlit-go-backend:deployed-arm
+    command: [ "/root/app", "--port", "8000", "--data", "/var/piqlit" ]
+    ports:
+      - 8000:8000
+    environment:
+      PL_CORS_HOST: "${PL_CORS_HOST:-*}"
+      PL_DATABASE_HOST: "${PL_DATABASE_HOST:-db}"
+      PL_DATABASE_NAME: "${PL_DATABASE_NAME:-pl}"
+      PL_DATABASE_USER: "${PL_DATABASE_USER:-pl}"
+      PL_DATABASE_PASS: "${PL_DATABASE_PASS:-pl}"
+      PL_DATABASE_PORT: "${PL_DATABASE_PORT:-5432}"
+    networks:
+      - prod-net
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      labels:
+        server: go
+        arch: armv7
+  db:
+    image: briand787b/piqlit-pg-db:deployed-arm
+    environment:
+      POSTGRES_USER:  ${POSTGRES_USER:-pl}
+      POSTGRES_PASSWORD: ${POSRGRES_PASSWORD:-pl}
+    networks:
+      - prod-net
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    healthcheck: 
+      test: [
+        "CMD", 
+        "pg_isready", 
+        "-U", 
+        "${POSTGRES_USER:-pl}", 
+        "-d", 
+        "${POSTGRES_USER:-pl}"
+      ] 
+      interval: 10s 
+      timeout: 5s 
+      retries: 5
+    deploy:
+      mode: global
+      labels:
+        server: postgresql
+        arch: armv7
+
+networks:
+  prod-net:
+    driver: overlay
+
+volumes:
+  postgresql-data:

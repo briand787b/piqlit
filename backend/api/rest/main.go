@@ -21,6 +21,8 @@ var (
 func main() {
 	flag.Parse()
 
+	log.Printf("serving directory %s from port %v\n", *dataDirFlag, *portFlag)
+
 	l := plog.NewPLogger(log.New(os.Stdout, "", 0), uuid.New())
 	ms := postgres.NewMediaPGStore(l, postgres.GetExtFull(l))
 	os := fs.NewObjectFileStore(l, *dataDirFlag)
