@@ -22,3 +22,9 @@ module "codesuite" {
 
     github_token = var.github_token
 }
+
+module "inlets" {
+    source = "./modules/inlets"
+
+    digitalocean_token = var.digitalocean_token
+}
