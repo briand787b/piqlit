@@ -25,6 +25,7 @@ module "codesuite" {
     source = "./modules/codesuite"
 
     github_token = var.github_token
+    docker_hub_password = var.docker_hub_password
     postman_api_key = var.postman_api_key
     postman_collection_id = var.postman_collection_id 
     codebuild_log_group = module.cloudwatch.cloudwatch_short_term_log_group

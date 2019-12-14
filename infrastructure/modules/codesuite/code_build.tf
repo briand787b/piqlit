@@ -35,6 +35,11 @@ resource "aws_codebuild_project" "codebuild" {
             name = "POSTMAN_COLLECTION_ID"
             value = var.postman_collection_id
         }
+
+        environment_variable {
+            name = "DOCKER_HUB_PASSWORD"
+            value = var.docker_hub_password
+        }  
     }
 
     cache {
