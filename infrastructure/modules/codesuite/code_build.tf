@@ -1,7 +1,3 @@
-resource "aws_s3_bucket" "build_cache" {
-    bucket = "piqlit-codebuild-cache"
-}
-
 resource "aws_cloudwatch_log_stream" "codebuild_log_stream" {
     name = "codebuild_log_stream"
     log_group_name = var.codebuild_log_group.name
@@ -41,11 +37,6 @@ resource "aws_codebuild_project" "codebuild" {
             name = "DOCKER_HUB_PASSWORD"
             value = var.docker_hub_password
         }  
-    }
-
-    cache {
-        type = "S3"
-        location = aws_s3_bucket.build_cache.arn
     }
 
     logs_config {

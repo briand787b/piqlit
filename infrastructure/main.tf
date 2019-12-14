@@ -4,6 +4,17 @@ provider "aws" {
   region = "us-east-1"
 }
 
+provider "github" {
+  token = var.github_token
+  version = "~> 2.2"
+  organization = "briand787b"
+}
+
+provider digitalocean {
+    token = var.digitalocean_token
+    version = "~> 1.11"
+}
+
 // backend
 terraform {
     backend "s3" {
@@ -24,7 +35,6 @@ module "cloudwatch" {
 module "codesuite" {
     source = "./modules/codesuite"
 
-    github_token = var.github_token
     docker_hub_password = var.docker_hub_password
     postman_api_key = var.postman_api_key
     postman_collection_id = var.postman_collection_id 
@@ -33,6 +43,4 @@ module "codesuite" {
 
 module "inlets" {
     source = "./modules/inlets"
-
-    digitalocean_token = var.digitalocean_token
 }
