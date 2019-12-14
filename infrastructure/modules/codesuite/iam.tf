@@ -31,9 +31,7 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
                     "arn:aws:logs:us-east-1:565527435302:log-group:/aws/codebuild/piqlit:*"
                 ],
                 "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
+                    "logs:*"
                 ]
             },
             {
