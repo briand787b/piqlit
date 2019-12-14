@@ -27,24 +27,13 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
             {
                 "Effect": "Allow",
                 "Resource": [
-                    "arn:aws:logs:us-east-1:565527435302:log-group:/aws/codebuild/piqlit",
-                    "arn:aws:logs:us-east-1:565527435302:log-group:/aws/codebuild/piqlit:*"
+                    "${aws_codebuild_project.codebuild.arn}",
+                    "${aws_codebuild_project.codebuild.arn}:*"
                 ],
                 "Action": [
-                    "logs:*"
-                ]
-            },
-            {
-                "Effect": "Allow",
-                "Resource": [
-                    "arn:aws:s3:::codepipeline-us-east-1-*"
-                ],
-                "Action": [
-                    "s3:PutObject",
-                    "s3:GetObject",
-                    "s3:GetObjectVersion",
-                    "s3:GetBucketAcl",
-                    "s3:GetBucketLocation"
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
                 ]
             }
         ]
