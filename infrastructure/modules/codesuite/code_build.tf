@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "build_cache" {
 
 resource "aws_cloudwatch_log_stream" "codebuild_log_stream" {
     name = "codebuild_log_stream"
-    log_group_name = var.codebuild_log_group_name
+    log_group_name = var.codebuild_log_group.name
 } 
 
 resource "aws_codebuild_project" "codebuild" {
@@ -44,7 +44,7 @@ resource "aws_codebuild_project" "codebuild" {
 
     logs_config {
         cloudwatch_logs {
-            group_name = var.codebuild_log_group_name
+            group_name = var.codebuild_log_group.name
             stream_name = aws_cloudwatch_log_stream.codebuild_log_stream.name
         }
     }
