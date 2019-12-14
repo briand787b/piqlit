@@ -23,7 +23,7 @@ resource "aws_codebuild_project" "codebuild" {
 
     environment {
         type = "LINUX_CONTAINER"
-        image = "aws/codebuild/amazonlinux2-aarch64-standard:1.0-19.11.14"
+        image = "aws/codebuild/amazonlinux2-x86_64-standard:1.0"
         compute_type = "BUILD_GENERAL1_SMALL"
         
         environment_variable {
