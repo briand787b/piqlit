@@ -5,3 +5,11 @@ variable "github_token" {
 variable "digitalocean_token" {
   type = string
 }
+
+variable "postman_api_key" {
+  type = string
+}
+
+variable "postman_collection_id" {
+  type = string
+}
