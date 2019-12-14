@@ -25,6 +25,7 @@ resource "aws_codebuild_project" "codebuild" {
         type = "LINUX_CONTAINER"
         image = "aws/codebuild/amazonlinux2-x86_64-standard:1.0"
         compute_type = "BUILD_GENERAL1_SMALL"
+        privileged_mode = true
         
         environment_variable {
             name = "POSTMAN_API_KEY"
