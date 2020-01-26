@@ -4,7 +4,7 @@ WORKDIR /go/app
 COPY go.mod go.sum /go/app/
 RUN go mod download
 COPY . /go/app/
-RUN GOOS=linux GOARCH=amd64 CG0_ENABLED=0 go build -a -o piqlit-cli /go/app/cli
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -a -o piqlit-cli /go/app/cli
 
 # RUN STAGE
 FROM postman/newman:ubuntu
