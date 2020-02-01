@@ -1,3 +1,6 @@
+build:
+	docker-compose build $(service)
+
 run_dev:
 	docker-compose down
 	docker-compose \
@@ -6,7 +9,12 @@ run_dev:
 		down
 	docker-compose build
 	docker-compose config
-	docker-compose up
+	docker-compose up -d
+	docker-compose logs -f
+
+update:
+	docker-compose up -d --no-deps $(service)
+	docker-compose logs -f
 
 run_prod:
 	docker-compose down

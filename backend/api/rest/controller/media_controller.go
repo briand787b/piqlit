@@ -14,7 +14,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
-	"github.com/pkg/errors"
 )
 
 // MediaController controls the flow of HTTP routes for Media resources
@@ -38,19 +37,19 @@ func (c *MediaController) mediaCtx(next http.Handler) http.Handler {
 		ctx := r.Context()
 		mID := chi.URLParam(r, "media_id")
 		if mID == "" {
-			render.Render(w, r, newErrResponse(ctx, c.l, errors.New("no media_id in url params")))
+			render.Render(w, r, perr.NewInternalServerHTTPError(ctx, "no media_id in url params", c.l))
 			return
 		}
 
 		mIDInt, err := strconv.Atoi(mID)
 		if err != nil {
-			render.Render(w, r, newErrResponse(ctx, c.l, perr.NewErrInvalid("could not convert string tag_id to int")))
+			render.Render(w, r, perr.NewValidationHTTPErrorFromError(ctx, err, "could not convert string tag_id to int", c.l))
 			return
 		}
 
 		m, err := model.FindMediaByID(r.Context(), c.ms, mIDInt)
 		if err != nil {
-			render.Render(w, r, newErrResponse(ctx, c.l, err))
+			render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not find Media by ID", c.l))
 			return
 		}
 
@@ -65,20 +64,20 @@ func (c *MediaController) HandleCreate(w http.ResponseWriter, r *http.Request) {
 
 	var data MediaRequest
 	if err := render.Bind(r, &data); err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, perr.NewErrInvalid("could not bind request body to Media")))
+		render.Render(w, r, perr.NewValidationHTTPErrorFromError(ctx, err, "could not bind request body to Media", c.l))
 		return
 	}
 
 	m := data.Media()
 	if err := m.Persist(ctx, c.l, c.ms); err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, err))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not persist Media", c.l))
 		return
 	}
 
 	// returned Media must be searched to get all created/updated children
 	mr, err := model.FindMediaByID(ctx, c.ms, m.ID)
 	if err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, err))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not find Media by ID", c.l))
 		return
 	}
 
@@ -91,16 +90,12 @@ func (c *MediaController) HandleDelete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	m, ok := ctx.Value(mediaCtxKey).(*model.Media)
 	if !ok {
-		render.Render(w, r, newErrResponse(
-			r.Context(),
-			c.l,
-			perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))),
-		)
+		render.Render(w, r, perr.NewNotFoundHTTPError(ctx, "no or invalid media value for mediaCtxKey", c.l))
 		return
 	}
 
 	if err := m.Delete(ctx, c.l, c.ms); err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not delete resource")))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not delete resource", c.l))
 		return
 	}
 
@@ -112,23 +107,19 @@ func (c *MediaController) HandleDownloadGZ(w http.ResponseWriter, r *http.Reques
 	ctx := r.Context()
 	m, ok := r.Context().Value(mediaCtxKey).(*model.Media)
 	if !ok {
-		render.Render(w, r, newErrResponse(
-			r.Context(),
-			c.l,
-			perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))),
-		)
+		render.Render(w, r, perr.NewNotFoundHTTPError(ctx, "no or invalid media value for mediaCtxKey", c.l))
 		return
 	}
 
 	rc, err := m.DownloadGZ(ctx, c.l, c.os)
 	if err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not get raw bytes")))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not get raw bytes", c.l))
 		return
 	}
 
 	defer c.l.Close(ctx, rc)
 	if _, err := io.Copy(w, rc); err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not send raw bytes")))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not send raw bytes", c.l))
 		return
 	}
 
@@ -140,23 +131,19 @@ func (c *MediaController) HandleDownloadRaw(w http.ResponseWriter, r *http.Reque
 	ctx := r.Context()
 	m, ok := r.Context().Value(mediaCtxKey).(*model.Media)
 	if !ok {
-		render.Render(w, r, newErrResponse(
-			r.Context(),
-			c.l,
-			perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))),
-		)
+		render.Render(w, r, perr.NewNotFoundHTTPError(ctx, "no or invalid media value for mediaCtxKey", c.l))
 		return
 	}
 
 	rc, err := m.DownloadRaw(ctx, c.l, c.os)
 	if err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not get raw bytes")))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not get raw bytes", c.l))
 		return
 	}
 
 	defer c.l.Close(ctx, rc)
 	if _, err := io.Copy(w, rc); err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not send raw bytes")))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not send raw bytes", c.l))
 		return
 	}
 
@@ -168,7 +155,8 @@ func (c *MediaController) HandleGetAllRoot(w http.ResponseWriter, r *http.Reques
 	ctx := r.Context()
 	ms, err := model.GetAllRootMedia(ctx, c.ms)
 	if err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, err))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not get all root Media", c.l))
+		return
 	}
 
 	render.Render(w, r, NewMediaResponseList(ms, 0, 0))
@@ -178,11 +166,7 @@ func (c *MediaController) HandleGetAllRoot(w http.ResponseWriter, r *http.Reques
 func (c *MediaController) HandleGetByID(w http.ResponseWriter, r *http.Request) {
 	m, ok := r.Context().Value(mediaCtxKey).(*model.Media)
 	if !ok {
-		render.Render(w, r, newErrResponse(
-			r.Context(),
-			c.l,
-			perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))),
-		)
+		render.Render(w, r, perr.NewNotFoundHTTPError(r.Context(), "no or invalid media value for mediaCtxKey", c.l))
 		return
 	}
 
@@ -195,7 +179,7 @@ func (c *MediaController) HandleUpdateShallow(w http.ResponseWriter, r *http.Req
 
 	var data MediaUpdateRequest
 	if err := render.Bind(r, &data); err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, perr.NewErrInvalid("could not bind request body to Media")))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not bind request body to Media", c.l))
 		return
 	}
 
@@ -204,23 +188,19 @@ func (c *MediaController) HandleUpdateShallow(w http.ResponseWriter, r *http.Req
 	if m, ok := ctx.Value(mediaCtxKey).(*model.Media); ok {
 		mBody.ID = m.ID
 	} else {
-		render.Render(w, r, newErrResponse(
-			r.Context(),
-			c.l,
-			perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))),
-		)
+		render.Render(w, r, perr.NewNotFoundHTTPError(ctx, "no or invalid media value for mediaCtxKey", c.l))
 		return
 	}
 
 	if err := mBody.UpdateShallow(ctx, c.l, c.ms); err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, err))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not update shallow", c.l))
 		return
 	}
 
 	// returned Media must be searched to get all created/updated children
 	mr, err := model.FindMediaByID(ctx, c.ms, mBody.ID)
 	if err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, err))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not find Media by ID", c.l))
 		return
 	}
 
@@ -234,7 +214,7 @@ func (c *MediaController) HandleRawUpload(w http.ResponseWriter, r *http.Request
 
 	m, ok := ctx.Value(mediaCtxKey).(*model.Media)
 	if !ok {
-		render.Render(w, r, newErrResponse(ctx, c.l, perr.NewErrNotFound(errors.New("media not found by id"))))
+		render.Render(w, r, perr.NewNotFoundHTTPError(ctx, "media not found by id", c.l))
 		return
 	}
 
@@ -242,7 +222,8 @@ func (c *MediaController) HandleRawUpload(w http.ResponseWriter, r *http.Request
 	m.Content = r.Body
 
 	if err := m.UploadRaw(ctx, c.l, c.ms, c.os); err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not upload raw media")))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not upload raw media", c.l))
+		return
 	}
 
 	render.Status(r, http.StatusAccepted)
@@ -253,17 +234,13 @@ func (c *MediaController) HandleStreamRaw(w http.ResponseWriter, r *http.Request
 	ctx := r.Context()
 	m, ok := r.Context().Value(mediaCtxKey).(*model.Media)
 	if !ok {
-		render.Render(w, r, newErrResponse(
-			r.Context(),
-			c.l,
-			perr.NewErrNotFound(errors.New("no or invalid media value for mediaCtxKey"))),
-		)
+		render.Render(w, r, perr.NewNotFoundHTTPError(ctx, "no or invalid media value for mediaCtxKey", c.l))
 		return
 	}
 
 	rc, err := m.DownloadRaw(ctx, c.l, c.os)
 	if err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not get raw bytes")))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not get raw bytes", c.l))
 		return
 	}
 
@@ -272,7 +249,7 @@ func (c *MediaController) HandleStreamRaw(w http.ResponseWriter, r *http.Request
 
 	defer c.l.Close(ctx, rc)
 	if _, err := io.Copy(w, rc); err != nil {
-		render.Render(w, r, newErrResponse(ctx, c.l, errors.Wrap(err, "could not send raw bytes")))
+		render.Render(w, r, perr.NewHTTPErrorFromError(ctx, err, "could not send raw bytes", c.l))
 		return
 	}
 }
