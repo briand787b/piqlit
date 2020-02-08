@@ -43,7 +43,7 @@ func (c *MediaController) mediaCtx(next http.Handler) http.Handler {
 
 		mIDInt, err := strconv.Atoi(mID)
 		if err != nil {
-			render.Render(w, r, perr.NewValidationHTTPErrorFromError(ctx, err, "could not convert string tag_id to int", c.l))
+			render.Render(w, r, perr.NewValidationHTTPErrorFromError(ctx, err, "could not convert string mID to int", c.l))
 			return
 		}
 
