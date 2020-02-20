@@ -99,7 +99,7 @@ func (c *MediaController) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.Status(r, http.StatusOK)
+	render.NoContent(w, r)
 }
 
 // HandleDownloadGZ x

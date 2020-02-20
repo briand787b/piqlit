@@ -1,7 +1,7 @@
 build:
 	docker-compose build $(service)
 
-run_dev:
+run:
 	docker-compose down
 	docker-compose \
 		-f docker-compose.yml \
