@@ -4,14 +4,14 @@ services:
   backend:
     volumes:
       - type: bind
-        source: ./filesys/backend/test
+        source: ./filesystem/backend/test
         target: /var/piqlit/media
   db:
     volumes:
       - db_test_data:/var/lib/postgresql/data 
   backend-test:
     build:
-      context: ./backend
+      context: ./go
       args:
         - arch=amd64
       dockerfile: ./api/rest/Dockerfile
@@ -36,7 +36,7 @@ services:
       - private
   postman-test:
     build:
-      context: ./backend
+      context: ./go
       dockerfile: ./api/postman/Dockerfile
     environment:
       POSTMAN_API_KEY: "${POSTMAN_API_KEY}"

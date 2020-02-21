@@ -1,1 +1,0 @@
-# piqlit REST API 

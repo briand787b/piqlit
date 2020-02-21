@@ -3,7 +3,7 @@ version: '3.7'
 
 services:
   frontend-web-vue:
-    build: ./frontend/web/vue
+    build: vue
     ports:
       - 8080:80
     environment:
@@ -13,7 +13,7 @@ services:
   backend:
     volumes:
       - type: bind
-        source: ./filesys/backend/dev
+        source: ./filesystem/backend/dev
         target: /var/piqlit/media
   db:
     volumes:

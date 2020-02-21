@@ -1,3 +1,0 @@
-# Piqlit Web Frontend
-
-## Under Construction...

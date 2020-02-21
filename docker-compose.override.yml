@@ -3,7 +3,7 @@ version: '3.7'
 services:
   frontend-web-vue:
     build:
-      context: ./frontend/web/vue
+      context: vue
       dockerfile: dev.Dockerfile
     ports:
       - 8080:8080
@@ -12,16 +12,16 @@ services:
       VUE_APP_BACKEND_HOST: ${VUE_BACKEND_HOST:-localhost:8000}
     volumes:
       - type: bind
-        source: ./frontend/web/vue
+        source: ./vue
         target: /app
   backend:
     volumes:
       - type: bind
-        source: ./filesys/backend/dev
+        source: ./filesystem/backend/dev
         target: /var/piqlit/media
   db:
     volumes:
       - db_data:/var/lib/postgresql/data 
 
 volumes:
-  db_data:    
+  db_data:

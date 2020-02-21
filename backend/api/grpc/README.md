@@ -1,3 +1,0 @@
-# piqlit gRPC API
-
-## Under Construction...
