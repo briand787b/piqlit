@@ -18,8 +18,8 @@ filesys/backend/*
 *.tfvars
 
 #### VUE ####
-frontend/web/vue/node_modules
-frontend/web/vue/package-lock.json
+node_modules
+# frontend/web/vue/package-lock.json
 
 #### GO ####
 # Binaries for programs and plugins
