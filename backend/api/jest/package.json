@@ -1,0 +1,17 @@
+{
+  "name": "functional_tests",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "sum.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Brian D'Ostilio",
+  "license": "ISC",
+  "devDependencies": {
+    "axios": "^0.19.2",
+    "jest": "^25.1.0"
+  },
+  "dependencies": {}
+}
