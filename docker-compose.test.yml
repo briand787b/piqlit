@@ -50,6 +50,13 @@ services:
       - private
     depends_on:
       - backend
+  jest-test:
+    build:
+      context: ./backend/api/jest
+    networks:
+      - private
+    depends_on:
+      - backend
 
 volumes:
   db_test_data:
