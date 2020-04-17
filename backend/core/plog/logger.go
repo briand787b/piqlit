@@ -5,7 +5,8 @@ import (
 	"io"
 )
 
-// LogWriter writes to the concrete type that
+// LogWriter represents the underlying functionality that writes logs. 
+// This will typically be STDOUT, but may be some other medium.
 type LogWriter interface {
 	Println(v ...interface{})
 }
