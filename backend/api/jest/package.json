@@ -10,7 +10,7 @@
   "author": "Brian D'Ostilio",
   "license": "ISC",
   "devDependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "jest": "^25.1.0"
   },
   "dependencies": {}
